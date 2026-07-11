@@ -12,8 +12,20 @@
       "dest": "main.py"
     },
     {
+      "src": "/css/(.*)",
+      "dest": "static/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "static/js/$1"
+    },
+    {
+      "src": "/audio/(.*)",
+      "dest": "static/audio/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "static/$1"
+      "dest": "static/index.html"
     }
   ]
 }
