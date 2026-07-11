@@ -1584,37 +1584,23 @@ body.light-theme.wp-tokyo {
     background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/tokyo.jpg');
 }
 
-/* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES */
+/* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
 
 /* 1. Writing Workspace (Cinzel) */
-body.ws-writing #writing-workspace, 
-body.ws-writing #writing-workspace input, 
-body.ws-writing #writing-workspace button, 
-body.ws-writing #writing-workspace select, 
-body.ws-writing #writing-workspace textarea, 
-body.ws-writing #writing-workspace .note-preview-area, 
-body.ws-writing #writing-workspace .note-preview-area * {
+body.ws-writing,
+body.ws-writing :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Cinzel', serif !important;
 }
 
 /* 2. Coding Workspace (Monaco) */
-body.ws-coding #coding-workspace,
-body.ws-coding #coding-workspace button,
-body.ws-coding #coding-workspace select,
-body.ws-coding #coding-workspace pre,
-body.ws-coding #coding-workspace code,
-body.ws-coding #coding-workspace .console-log,
-body.ws-coding #coding-workspace .console-log * {
+body.ws-coding,
+body.ws-coding :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Monaco', 'JetBrains Mono', monospace !important;
 }
 
 /* 3. PDF/Reading Workspace (Lora) */
-body.ws-pdf #pdf-workspace,
-body.ws-pdf #pdf-workspace input,
-body.ws-pdf #pdf-workspace button,
-body.ws-pdf #pdf-workspace select,
-body.ws-pdf #pdf-workspace textarea,
-body.ws-pdf #pdf-workspace .pdf-note-textarea {
+body.ws-pdf,
+body.ws-pdf :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Lora', serif !important;
 }
 
