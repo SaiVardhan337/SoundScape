@@ -10,9 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js and Marked.js CDNs -->
+    <!-- Chart.js, Marked.js and Ace Editor CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.7/ace.min.js"></script>
     <!-- Custom Style -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -30,6 +31,14 @@
                 </div>
                 <span class="badge">Local Engine</span>
             </div>
+            
+            <!-- WORKSPACE SWITCHER -->
+            <div class="workspace-switcher">
+                <button class="switcher-btn active" data-workspace="writing"><i class="fa-solid fa-pen-nib"></i> Writing</button>
+                <button class="switcher-btn" data-workspace="coding"><i class="fa-solid fa-code"></i> Coding</button>
+                <button class="switcher-btn" data-workspace="pdf"><i class="fa-solid fa-file-pdf"></i> PDF Reader</button>
+            </div>
+
             <div class="header-actions">
                 <button id="theme-toggle-btn" class="header-btn theme-btn" title="Toggle Theme">
                     <i class="fa-solid fa-moon"></i> Theme
@@ -66,6 +75,11 @@
                         <input type="checkbox" id="toggle-reactive">
                         <span class="toggle-slider"></span>
                         <span class="toggle-name"><i class="fa-solid fa-gauge-high"></i> Flow Filter (Slow & Gentle)</span>
+                    </label>
+                    <label class="toggle-control full-width">
+                        <input type="checkbox" id="toggle-typewriter">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-name"><i class="fa-solid fa-keyboard"></i> Typewriter Sounds</span>
                     </label>
                 </div>
 
@@ -121,35 +135,146 @@
             <!-- CENTER & RIGHT COMBINED WORKSPACE -->
             <div class="workspace-area">
 
-                <!-- MARKDOWN NOTEPAD -->
-                <section class="glass-card notepad-card">
-                    <!-- Flow Mode Progress Bar -->
-                    <div id="flow-progress-container" class="flow-progress-container hidden">
-                        <div id="flow-progress-bar" class="flow-progress-bar"></div>
-                    </div>
-                    <div class="notepad-header">
-                        <div class="notepad-tabs">
-                            <button id="edit-tab-btn" class="notepad-tab active"><i class="fa-solid fa-pen-nib"></i> Editor</button>
-                            <button id="preview-tab-btn" class="notepad-tab"><i class="fa-solid fa-eye"></i> Preview</button>
-                            <div class="export-container">
-                                <button id="export-btn" class="notepad-tab export-btn-main" title="Export Note"><i class="fa-solid fa-file-export"></i> Export <i class="fa-solid fa-chevron-down caret-icon"></i></button>
-                                <div id="export-dropdown" class="export-dropdown hidden">
-                                    <button class="export-opt" data-type="html"><i class="fa-solid fa-file-code"></i> HTML</button>
-                                    <button class="export-opt" data-type="pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                <!-- WRITING WORKSPACE -->
+                <div id="writing-workspace" class="workspace-panel">
+                    <section class="glass-card notepad-card">
+                        <!-- Flow Mode Progress Bar -->
+                        <div id="flow-progress-container" class="flow-progress-container hidden">
+                            <div id="flow-progress-bar" class="flow-progress-bar"></div>
+                        </div>
+                        
+                        <div class="notepad-header">
+                            <div class="notepad-tabs">
+                                <button id="edit-tab-btn" class="notepad-tab active"><i class="fa-solid fa-pen-nib"></i> Editor</button>
+                                <button id="preview-tab-btn" class="notepad-tab"><i class="fa-solid fa-eye"></i> Preview</button>
+                                <div class="export-container">
+                                    <button id="export-btn" class="notepad-tab export-btn-main" title="Export Note"><i class="fa-solid fa-file-export"></i> Export <i class="fa-solid fa-chevron-down caret-icon"></i></button>
+                                    <div id="export-dropdown" class="export-dropdown hidden">
+                                        <button class="export-opt" data-type="html"><i class="fa-solid fa-file-code"></i> HTML</button>
+                                        <button class="export-opt" data-type="pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Writing assistant tools in header -->
+                            <div class="writing-assist-bar">
+                                <select id="word-goal-select" class="track-select compact-select">
+                                    <option value="0">Set Word Goal</option>
+                                    <option value="100">100 Words</option>
+                                    <option value="500">500 Words</option>
+                                    <option value="1000">1000 Words</option>
+                                </select>
+                                <button id="prompt-generator-btn" class="notepad-tab compact-tab-btn" title="Generate Creative Writing Prompt"><i class="fa-solid fa-lightbulb"></i> Prompt</button>
+                            </div>
+
+                            <div class="editor-meta">
+                                <span id="wpm-display" class="wpm-display-badge hidden">0 WPM</span>
+                                <span id="autosave-indicator" class="autosave-indicator">Saved</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Word Goal Progress Sub-bar -->
+                        <div id="goal-progress-container" class="goal-progress-container hidden">
+                            <div id="goal-progress-bar" class="goal-progress-bar"></div>
+                            <span id="goal-progress-text" class="goal-progress-text">0 / 100 words</span>
+                        </div>
+
+                        <!-- Writing Prompt Container -->
+                        <div id="writing-prompt-box" class="writing-prompt-box hidden">
+                            <div class="prompt-header">
+                                <span><i class="fa-solid fa-wand-magic-sparkles"></i> Creative Prompt</span>
+                                <button id="close-prompt-btn" class="icon-btn-small"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <p id="prompt-display-text" class="prompt-text">Start writing about your favorite ambient memory...</p>
+                        </div>
+
+                        <div class="notepad-body">
+                            <textarea id="note-editor" class="note-textarea" placeholder="Start typing notes in markdown format..."></textarea>
+                            <div id="note-preview" class="note-preview-area hidden"></div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- CODING WORKSPACE -->
+                <div id="coding-workspace" class="workspace-panel hidden">
+                    <section class="glass-card coding-card">
+                        <div class="coding-header">
+                            <div class="editor-tabs">
+                                <span class="tab-title"><i class="fa-solid fa-code"></i> Code Workspace</span>
+                            </div>
+                            
+                            <!-- Code toolbar actions -->
+                            <div class="coding-toolbar">
+                                <select id="code-lang-select" class="track-select compact-select">
+                                    <option value="python">Python</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="java">Java</option>
+                                    <option value="c_cpp">C / C++</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                </select>
+                                <select id="code-theme-select" class="track-select compact-select">
+                                    <option value="monokai">Monokai</option>
+                                    <option value="tomorrow_night">Tomorrow Night</option>
+                                    <option value="chrome">Chrome (Light)</option>
+                                    <option value="github">Github (Light)</option>
+                                </select>
+                                <button id="run-code-btn" class="run-btn" title="Run Code"><i class="fa-solid fa-play"></i> Run</button>
+                            </div>
+                        </div>
+                        
+                        <div class="coding-body">
+                            <!-- Ace Code Editor target div -->
+                            <div id="code-editor-container">
+                                <div id="code-editor"># Write your code here...
+print("Hello from SoundScape!")</div>
+                            </div>
+                            
+                            <!-- Console panel -->
+                            <div class="console-panel">
+                                <div class="console-header">
+                                    <span><i class="fa-solid fa-terminal"></i> Console Output</span>
+                                    <button id="clear-console-btn" class="icon-btn-small" title="Clear Console"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                                <div id="console-log" class="console-log">
+                                    <span class="system-line">[System] Press 'Run' to execute code.</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="editor-meta">
-                            <span id="wpm-display" class="wpm-display-badge hidden">0 WPM</span>
-                            <span id="autosave-indicator" class="autosave-indicator">Saved</span>
+                    </section>
+                </div>
+
+                <!-- PDF READER WORKSPACE -->
+                <div id="pdf-workspace" class="workspace-panel hidden">
+                    <section class="glass-card pdf-card">
+                        <div class="pdf-split-container">
+                            
+                            <!-- Left: PDF Frame & Uploader -->
+                            <div class="pdf-viewer-section">
+                                <div class="pdf-upload-tray" id="pdf-upload-tray">
+                                    <i class="fa-solid fa-file-pdf pdf-upload-icon"></i>
+                                    <p>Drag & Drop PDF or Click to Upload</p>
+                                    <input type="file" id="pdf-file-input" accept="application/pdf" class="hidden-file-input">
+                                    <button class="upload-trigger-btn" onclick="document.getElementById('pdf-file-input').click()"><i class="fa-solid fa-arrow-up-from-bracket"></i> Select PDF</button>
+                                </div>
+                                <iframe id="pdf-viewer-frame" class="pdf-viewer-frame hidden" src="" type="application/pdf"></iframe>
+                            </div>
+                            
+                            <!-- Right: Side Annotation Notepad -->
+                            <div class="pdf-notes-section">
+                                <div class="notepad-header">
+                                    <span class="tab-title"><i class="fa-solid fa-pen-to-square"></i> PDF Annotations</span>
+                                    <span id="pdf-autosave-indicator" class="autosave-indicator">Saved</span>
+                                </div>
+                                <div class="pdf-notes-body">
+                                    <textarea id="pdf-note-editor" class="note-textarea pdf-note-textarea" placeholder="Take notes, copy highlights, or outline here..."></textarea>
+                                </div>
+                            </div>
+                            
                         </div>
-                    </div>
-                    
-                    <div class="notepad-body">
-                        <textarea id="note-editor" class="note-textarea" placeholder="Start typing notes in markdown format..."></textarea>
-                        <div id="note-preview" class="note-preview-area hidden"></div>
-                    </div>
-                </section>
+                    </section>
+                </div>
+
             </div>
             
         </main>

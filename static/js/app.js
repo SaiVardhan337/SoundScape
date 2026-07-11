@@ -1,6 +1,9 @@
 // SoundScape Core Application Manager
 document.addEventListener("DOMContentLoaded", () => {
     
+    // Global references for dynamic workspace integration
+    let aceEditorInstance = null;
+
     // ==========================================
     // THEME TOGGLE: Dark/Light Theme Manager
     // ==========================================
@@ -19,9 +22,19 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isLight) {
             localStorage.setItem("theme", "light");
             themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i> Theme';
+            if (aceEditorInstance) {
+                aceEditorInstance.setTheme("ace/theme/chrome");
+                const codeThemeSelect = document.getElementById("code-theme-select");
+                if (codeThemeSelect) codeThemeSelect.value = "chrome";
+            }
         } else {
             localStorage.setItem("theme", "dark");
             themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i> Theme';
+            if (aceEditorInstance) {
+                aceEditorInstance.setTheme("ace/theme/monokai");
+                const codeThemeSelect = document.getElementById("code-theme-select");
+                if (codeThemeSelect) codeThemeSelect.value = "monokai";
+            }
         }
     });
 
@@ -75,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Debounce listener to reduce API calls while typing
     editor.addEventListener("input", (e) => {
         saveIndicator.textContent = "Saving...";
+        if (typeof updateWordGoalProgress === "function") updateWordGoalProgress();
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             saveWorkspaceNote(e.target.value);
@@ -107,10 +121,27 @@ document.addEventListener("DOMContentLoaded", () => {
     let keypressTimestamps = [];
     let currentWPM = 0;
     
-    // Track key presses in editor (only for calculating speed metrics)
-    editor.addEventListener("keydown", (e) => {
+    // Track key presses globally (for WPM and Typewriter sound synthesis)
+    document.addEventListener("keydown", (e) => {
+        const tag = e.target.tagName.toLowerCase();
+        const isInput = tag === "textarea" || tag === "input" || e.target.classList.contains("ace_text-input");
+        if (!isInput) return;
+        
+        // Log keypress timestamp for WPM calculation
         if (e.key && e.key.length === 1) {
             keypressTimestamps.push(Date.now());
+        }
+        
+        // Play typewriter sound if enabled
+        if (toggleTypewriter && toggleTypewriter.checked) {
+            const modifierKeys = ["Shift", "Control", "Alt", "Meta", "CapsLock", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Escape", "Tab"];
+            if (modifierKeys.includes(e.key)) return;
+            
+            if (e.key === "Enter") {
+                playTypewriterBell();
+            } else {
+                playTypewriterClick();
+            }
         }
     });
 
@@ -570,6 +601,340 @@ document.addEventListener("DOMContentLoaded", () => {
         // Trigger native browser print which provides PDF conversion options
         window.print();
     }
+
+    // ==========================================
+    // TYPEWRITER SOUNDS SYNTHESIZER
+    // ==========================================
+    const toggleTypewriter = document.getElementById("toggle-typewriter");
+    
+    // Load cached preference
+    const cachedTypewriter = localStorage.getItem("typewriter") === "true";
+    if (toggleTypewriter) toggleTypewriter.checked = cachedTypewriter;
+
+    if (toggleTypewriter) {
+        toggleTypewriter.addEventListener("change", () => {
+            localStorage.setItem("typewriter", toggleTypewriter.checked);
+        });
+    }
+
+    function playTypewriterClick() {
+        if (!sound.ctx) sound.init();
+        const ctx = sound.ctx;
+        if (!ctx || ctx.state === "suspended") return;
+        
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        const gain2 = ctx.createGain();
+
+        // High pitch transient click
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(3200, ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.004);
+        
+        gain1.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.006);
+
+        // Low key strike body thud
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(180, ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.015);
+        
+        gain2.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.02);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(ctx.currentTime + 0.025);
+        osc2.stop(ctx.currentTime + 0.025);
+    }
+
+    function playTypewriterBell() {
+        if (!sound.ctx) sound.init();
+        const ctx = sound.ctx;
+        if (!ctx || ctx.state === "suspended") return;
+
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(1200, ctx.currentTime); // High bell chime
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(2400, ctx.currentTime); // Overtone
+
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(ctx.currentTime + 0.8);
+        osc2.stop(ctx.currentTime + 0.8);
+    }
+
+    // ==========================================
+    // MULTI-WORKSPACE COORDINATOR
+    // ==========================================
+    const switcherBtns = document.querySelectorAll(".switcher-btn");
+    const workspacePanels = document.querySelectorAll(".workspace-panel");
+    let activeWorkspace = "writing";
+
+    switcherBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            sound.init(); // Ensure Web Audio context is initialized
+            switcherBtns.forEach(b => b.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            
+            const ws = e.currentTarget.dataset.workspace;
+            activeWorkspace = ws;
+            
+            workspacePanels.forEach(panel => {
+                panel.classList.add("hidden");
+            });
+            
+            const targetPanel = document.getElementById(`${ws}-workspace`);
+            if (targetPanel) targetPanel.classList.remove("hidden");
+
+            // Auto-binaural sweeps matching task profiles
+            if (ws === "coding") {
+                // Set Coding Binaural Beat (15Hz Beta)
+                sound.setBinauralFrequency(15);
+                document.querySelectorAll(".binaural-modes .mode-btn").forEach(b => {
+                    b.classList.remove("active");
+                    if (b.dataset.freq === "15") b.classList.add("active");
+                });
+            } else if (ws === "writing") {
+                // Set Writing Binaural Beat (6Hz Theta)
+                sound.setBinauralFrequency(6);
+                document.querySelectorAll(".binaural-modes .mode-btn").forEach(b => {
+                    b.classList.remove("active");
+                    if (b.dataset.freq === "6") b.classList.add("active");
+                });
+            } else if (ws === "pdf") {
+                // Set Reading Binaural Beat (10Hz Alpha)
+                sound.setBinauralFrequency(10);
+                document.querySelectorAll(".binaural-modes .mode-btn").forEach(b => {
+                    b.classList.remove("active");
+                    if (b.dataset.freq === "10") b.classList.add("active");
+                });
+            }
+        });
+    });
+
+    // ==========================================
+    // WRITING TOOLS: GOALS & CREATIVE PROMPTS
+    // ==========================================
+    const wordGoalSelect = document.getElementById("word-goal-select");
+    const goalProgressContainer = document.getElementById("goal-progress-container");
+    const goalProgressBar = document.getElementById("goal-progress-bar");
+    const goalProgressText = document.getElementById("goal-progress-text");
+    let targetWordGoal = 0;
+
+    wordGoalSelect.addEventListener("change", (e) => {
+        targetWordGoal = Number(e.target.value);
+        if (targetWordGoal > 0) {
+            goalProgressContainer.classList.remove("hidden");
+            updateWordGoalProgress();
+        } else {
+            goalProgressContainer.classList.add("hidden");
+        }
+    });
+
+    function updateWordGoalProgress() {
+        if (targetWordGoal <= 0) return;
+        const text = editor.value || "";
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const pct = Math.min((words / targetWordGoal) * 100, 100);
+        goalProgressBar.style.setProperty("--progress-pct", `${pct}%`);
+        goalProgressText.textContent = `${words} / ${targetWordGoal} words`;
+        
+        if (pct >= 100) {
+            goalProgressText.innerHTML = `<span style="color: var(--color-success); font-weight: bold;"><i class="fa-solid fa-circle-check"></i> Goal Met!</span>`;
+        }
+    }
+
+    const promptBox = document.getElementById("writing-prompt-box");
+    const promptText = document.getElementById("prompt-display-text");
+    const promptBtn = document.getElementById("prompt-generator-btn");
+    const closePromptBtn = document.getElementById("close-prompt-btn");
+
+    const creativeWritingPrompts = [
+        "Write about a character who hears a soft mechanical hum late at night...",
+        "Describe a cozy rainy night in a futuristic library, focusing on sound and ambient smells.",
+        "Explain the feeling of debugging a complex block of code under the 3 AM moonlight.",
+        "Start a story with: 'The rain didn't wash away the neon glow of the street...'",
+        "Write a reflection on how noise and soundscapes influence your creative flow.",
+        "Draft a letter to a friend describing an ideal study space that you wish existed.",
+        "Write a scene where two coders are building a sound synthesizer in a hidden cellar."
+    ];
+
+    promptBtn.addEventListener("click", () => {
+        promptBox.classList.remove("hidden");
+        const idx = Math.floor(Math.random() * creativeWritingPrompts.length);
+        promptText.textContent = creativeWritingPrompts[idx];
+    });
+
+    closePromptBtn.addEventListener("click", () => {
+        promptBox.classList.add("hidden");
+    });
+
+    // ==========================================
+    // PDF READER: SPLIT FILE WORKSPACE
+    // ==========================================
+    const pdfFileInput = document.getElementById("pdf-file-input");
+    const pdfViewerFrame = document.getElementById("pdf-viewer-frame");
+    const pdfUploadTray = document.getElementById("pdf-upload-tray");
+    const pdfNoteEditor = document.getElementById("pdf-note-editor");
+    const pdfSaveIndicator = document.getElementById("pdf-autosave-indicator");
+    let pdfNoteTimer = null;
+
+    // Load cached PDF notes
+    pdfNoteEditor.value = localStorage.getItem("pdf_notes") || "";
+
+    pdfFileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === "application/pdf") {
+            const url = URL.createObjectURL(file);
+            pdfViewerFrame.src = url;
+            pdfViewerFrame.classList.remove("hidden");
+            pdfUploadTray.classList.add("hidden");
+        }
+    });
+
+    pdfNoteEditor.addEventListener("input", () => {
+        pdfSaveIndicator.textContent = "Saving...";
+        pdfSaveIndicator.classList.add("saving");
+        clearTimeout(pdfNoteTimer);
+        pdfNoteTimer = setTimeout(() => {
+            localStorage.setItem("pdf_notes", pdfNoteEditor.value);
+            pdfSaveIndicator.textContent = "Saved";
+            pdfSaveIndicator.classList.remove("saving");
+        }, 800);
+    });
+
+    // ==========================================
+    // ACE CODE EDITOR & MOCK RUNNER
+    // ==========================================
+    const codeLangSelect = document.getElementById("code-lang-select");
+    const codeThemeSelect = document.getElementById("code-theme-select");
+    const runCodeBtn = document.getElementById("run-code-btn");
+    const clearConsoleBtn = document.getElementById("clear-console-btn");
+    const consoleLog = document.getElementById("console-log");
+
+    // Initialize Ace Editor instance
+    const themeDefault = savedTheme === "light" ? "chrome" : "monokai";
+    aceEditorInstance = ace.edit("code-editor");
+    aceEditorInstance.setTheme(`ace/theme/${themeDefault}`);
+    aceEditorInstance.session.setMode("ace/mode/python");
+    codeThemeSelect.value = themeDefault;
+
+    aceEditorInstance.setOptions({
+        showPrintMargin: false,
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: "14px",
+        tabSize: 4,
+        useSoftTabs: true
+    });
+
+    codeLangSelect.addEventListener("change", (e) => {
+        const lang = e.target.value;
+        aceEditorInstance.session.setMode(`ace/mode/${lang}`);
+        
+        // Auto prep default print statement mocks for convenience
+        let defaultCode = "";
+        if (lang === "python") {
+            defaultCode = `# Write Python here...\nprint("Hello from SoundScape!")`;
+        } else if (lang === "javascript") {
+            defaultCode = `// Write Javascript here...\nconsole.log("Hello from SoundScape!");`;
+        } else if (lang === "java") {
+            defaultCode = `// Write Java here...\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from SoundScape!");\n    }\n}`;
+        } else if (lang === "c_cpp") {
+            defaultCode = `// Write C++ here...\n#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello from SoundScape!" << endl;\n    return 0;\n}`;
+        } else if (lang === "html") {
+            defaultCode = `<!-- Write HTML here -->\n<h1>Hello from SoundScape!</h1>`;
+        } else if (lang === "css") {
+            defaultCode = `/* Write CSS here */\nbody {\n    color: #8b5cf6;\n}`;
+        }
+        aceEditorInstance.setValue(defaultCode, 1);
+    });
+
+    codeThemeSelect.addEventListener("change", (e) => {
+        aceEditorInstance.setTheme(`ace/theme/${e.target.value}`);
+    });
+
+    clearConsoleBtn.addEventListener("click", () => {
+        consoleLog.innerHTML = '<span class="system-line">[System] Console cleared.</span>';
+    });
+
+    runCodeBtn.addEventListener("click", () => {
+        const code = aceEditorInstance.getValue();
+        const lang = codeLangSelect.value;
+
+        consoleLog.innerHTML = `<span class="system-line">[System] Compiling and running ${lang} script...</span>`;
+        
+        setTimeout(() => {
+            try {
+                let outputLines = [];
+                let regex = null;
+
+                if (lang === "python") {
+                    regex = /print\((['"])(.*?)\1\)/g;
+                } else if (lang === "javascript") {
+                    regex = /console\.log\((['"])(.*?)\1\)/g;
+                } else if (lang === "java") {
+                    regex = /System\.out\.println\((['"])(.*?)\1\)/g;
+                } else if (lang === "c_cpp") {
+                    regex = /cout\s*<<\s*(['"])(.*?)\1/g;
+                } else if (lang === "html" || lang === "css") {
+                    outputLines.push("[System] Successfully parsed client-side markup template.");
+                }
+
+                if (regex) {
+                    let match;
+                    while ((match = regex.exec(code)) !== null) {
+                        outputLines.push(match[2]);
+                    }
+                    if (outputLines.length === 0) {
+                        outputLines.push("Process executed with no stdout output.");
+                    }
+                } else if (lang !== "html" && lang !== "css") {
+                    outputLines.push("Compilation successful.");
+                }
+
+                outputLines.push("\nProcess finished with exit code 0.");
+
+                // Print results
+                outputLines.forEach(line => {
+                    const lineEl = document.createElement("div");
+                    if (line.includes("exit code 0")) {
+                        lineEl.className = "system-line";
+                    } else {
+                        lineEl.className = "success-line";
+                    }
+                    lineEl.textContent = line;
+                    consoleLog.appendChild(lineEl);
+                });
+
+            } catch (err) {
+                const errEl = document.createElement("div");
+                errEl.className = "error-line";
+                errEl.textContent = `[Error] Compilation failed: ${err.message}`;
+                consoleLog.appendChild(errEl);
+            }
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }, 800); // Latency delay
+    });
 
     // ==========================================
     // INITIALIZATION RUNNER

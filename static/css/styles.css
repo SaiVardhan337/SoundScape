@@ -1067,4 +1067,403 @@ body.light-theme .export-opt:hover {
     display: none;
 }
 
+/* WORKSPACE SWITCHER */
+.workspace-switcher {
+    display: flex;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+body.light-theme .workspace-switcher {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.switcher-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.switcher-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+body.light-theme .switcher-btn:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.switcher-btn.active {
+    background: var(--primary-gradient);
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+/* MULTI-WORKSPACE VISIBILITY COORDINATION */
+.workspace-panel {
+    width: 100%;
+}
+
+.workspace-panel.hidden {
+    display: none !important;
+}
+
+/* WRITING ASSISTANT TOOLS */
+.writing-assist-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.compact-select {
+    padding: 4px 8px !important;
+    font-size: 0.78rem !important;
+    margin-top: 0 !important;
+    width: auto !important;
+}
+
+.compact-tab-btn {
+    padding: 4px 8px !important;
+    font-size: 0.78rem !important;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.compact-tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Word Goal Progress Bar */
+.goal-progress-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.goal-progress-bar {
+    flex-grow: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.goal-progress-bar::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: var(--progress-pct, 0%);
+    background: linear-gradient(90deg, #10b981, #34d399);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Prompt Box */
+.writing-prompt-box {
+    background: rgba(139, 92, 246, 0.05);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #c084fc;
+    font-weight: 600;
+}
+
+.prompt-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+    font-style: italic;
+}
+
+.icon-btn-small {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.icon-btn-small:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* CODING WORKSPACE CARD */
+.coding-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 550px;
+}
+
+.coding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coding-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.run-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    transition: all 0.2s ease;
+}
+
+.run-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35);
+}
+
+.coding-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#code-editor-container {
+    width: 100%;
+    height: 320px;
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#code-editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92rem;
+}
+
+/* Console logs */
+.console-panel {
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    height: 150px;
+}
+
+body.light-theme .console-panel {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.console-log {
+    flex-grow: 1;
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    white-space: pre-wrap;
+    color: #e5e7eb;
+}
+
+body.light-theme .console-log {
+    color: #374151;
+}
+
+.system-line {
+    color: #6b7280;
+}
+
+.error-line {
+    color: var(--color-danger);
+}
+
+.success-line {
+    color: var(--color-success);
+}
+
+/* PDF READER WORKSPACE CARD */
+.pdf-card {
+    min-height: 550px;
+    overflow: hidden;
+}
+
+.pdf-split-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    height: 550px;
+}
+
+.pdf-viewer-section {
+    border-right: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+body.light-theme .pdf-viewer-section {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.pdf-upload-tray {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    padding: 40px;
+    text-align: center;
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    margin: 40px;
+}
+
+body.light-theme .pdf-upload-tray {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.pdf-upload-icon {
+    font-size: 3rem;
+    color: #f87171;
+    filter: drop-shadow(0 0 10px rgba(248, 113, 113, 0.2));
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+.upload-trigger-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-trigger-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.pdf-viewer-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.pdf-viewer-frame.hidden {
+    display: none;
+}
+
+.pdf-notes-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.pdf-notes-body {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.pdf-note-textarea {
+    min-height: 100% !important;
+    padding: 10px !important;
+    font-size: 0.88rem !important;
+}
+
+
 
