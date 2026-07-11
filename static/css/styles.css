@@ -1588,19 +1588,19 @@ body.light-theme.wp-tokyo {
 
 /* 1. Writing Workspace (Cinzel) */
 body.ws-writing,
-body.ws-writing :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
+body.ws-writing :not(#note-editor):not(#note-editor *):not(#note-preview):not(#note-preview *):not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Cinzel', serif !important;
 }
 
 /* 2. Coding Workspace (Monaco) */
 body.ws-coding,
-body.ws-coding :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
+body.ws-coding :not(#code-editor):not(#code-editor *):not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Monaco', 'JetBrains Mono', monospace !important;
 }
 
 /* 3. PDF/Reading Workspace (Lora) */
 body.ws-pdf,
-body.ws-pdf :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
+body.ws-pdf :not(#pdf-note-editor):not(#pdf-note-editor *):not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Lora', serif !important;
 }
 
@@ -1700,6 +1700,9 @@ body.light-theme .rt-btn:hover {
     white-space: pre-wrap;
     text-align: left;
     min-height: 400px;
+    font-family: 'Cinzel', serif;
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
 .contenteditable-editor:empty:before {

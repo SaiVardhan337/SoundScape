@@ -168,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (rtColorPicker) {
         rtColorPicker.addEventListener("input", (e) => {
             execFormat("foreColor", e.target.value);
+            if (rtColorBtn) rtColorBtn.style.color = e.target.value;
         });
     }
     
