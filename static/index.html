@@ -31,6 +31,9 @@
                 <span class="badge">Local Engine</span>
             </div>
             <div class="header-actions">
+                <button id="theme-toggle-btn" class="header-btn theme-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i> Theme
+                </button>
                 <button id="flow-mode-btn" class="header-btn flow-btn" title="Toggle Creative Flow Mode">
                     <i class="fa-solid fa-wind"></i> Flow Mode
                 </button>
@@ -76,9 +79,9 @@
                         <input type="range" id="slider-binaural" min="0" max="100" value="0" class="sound-slider">
                         <!-- Frequency selector for binaural -->
                         <div class="binaural-modes">
-                            <button class="mode-btn active" data-freq="10" title="Alpha (Relaxed Focus)">Alpha (10Hz)</button>
-                            <button class="mode-btn" data-freq="15" title="Beta (Active Problem Solving)">Beta (15Hz)</button>
-                            <button class="mode-btn" data-freq="6" title="Theta (Deep Meditation)">Theta (6Hz)</button>
+                            <button class="mode-btn active" data-freq="15" title="Deep Coding (Beta waves - 15Hz)">Coding (15Hz)</button>
+                            <button class="mode-btn" data-freq="6" title="Creative Writing (Theta waves - 6Hz)">Writing (6Hz)</button>
+                            <button class="mode-btn" data-freq="10" title="Reading & Research (Alpha waves - 10Hz)">Reading (10Hz)</button>
                         </div>
                     </div>
 
@@ -128,6 +131,13 @@
                         <div class="notepad-tabs">
                             <button id="edit-tab-btn" class="notepad-tab active"><i class="fa-solid fa-pen-nib"></i> Editor</button>
                             <button id="preview-tab-btn" class="notepad-tab"><i class="fa-solid fa-eye"></i> Preview</button>
+                            <div class="export-container">
+                                <button id="export-btn" class="notepad-tab export-btn-main" title="Export Note"><i class="fa-solid fa-file-export"></i> Export <i class="fa-solid fa-chevron-down caret-icon"></i></button>
+                                <div id="export-dropdown" class="export-dropdown hidden">
+                                    <button class="export-opt" data-type="html"><i class="fa-solid fa-file-code"></i> HTML</button>
+                                    <button class="export-opt" data-type="pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="editor-meta">
                             <span id="wpm-display" class="wpm-display-badge hidden">0 WPM</span>

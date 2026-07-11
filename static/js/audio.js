@@ -32,7 +32,7 @@ class SoundEngine {
             lofi: "audio/lofi.mp3"
         };
 
-        this.binauralFrequencyDiff = 10; // Default Alpha 10Hz
+        this.binauralFrequencyDiff = 15; // Default Coding Beta 15Hz
         this.baseCarrierFreq = 200;      // 200Hz base carrier frequency
         this.muted = false;
         this.filterNode = null;

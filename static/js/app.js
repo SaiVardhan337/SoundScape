@@ -2,6 +2,30 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     // ==========================================
+    // THEME TOGGLE: Dark/Light Theme Manager
+    // ==========================================
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i> Theme';
+    } else {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i> Theme';
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+        const isLight = document.body.classList.toggle("light-theme");
+        if (isLight) {
+            localStorage.setItem("theme", "light");
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i> Theme';
+        } else {
+            localStorage.setItem("theme", "dark");
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i> Theme';
+        }
+    });
+
+    // ==========================================
     // NOTEPAD: Markdown Autosave & Tabs & WPM
     // ==========================================
     const editor = document.getElementById("note-editor");
@@ -277,6 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.add("flow-mode-active");
             flowProgressContainer.classList.remove("hidden");
             
+            // Request Notification permission dynamically
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+
             // Turn on WPM meter dynamically
             toggleReactive.checked = true;
             wpmDisplay.classList.remove("hidden");
@@ -361,6 +390,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (flowSecondsElapsed >= flowDurationSeconds) {
                     playZenChime();
                     
+                    // Desktop push notification
+                    if ("Notification" in window && Notification.permission === "granted") {
+                        new Notification("SoundScape Flow Complete! 🎧✨", {
+                            body: "Excellent session! You've successfully finished your 15-minute focused writing flow.",
+                            tag: "soundscape-flow-complete"
+                        });
+                    }
+
                     // Immersive flash of green glow on success
                     const glow = document.getElementById("glow");
                     glow.style.background = "radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 100%)";
@@ -403,6 +440,136 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     flowModeBtn.addEventListener("click", toggleFlowMode);
+
+    // ==========================================
+    // NOTE EXPORTING: PDF & HTML Export Manager
+    // ==========================================
+    const exportBtn = document.getElementById("export-btn");
+    const exportDropdown = document.getElementById("export-dropdown");
+
+    exportBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        exportDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", () => {
+        exportDropdown.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".export-opt").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const type = e.currentTarget.dataset.type;
+            if (type === "html") {
+                exportAsHTML();
+            } else if (type === "pdf") {
+                exportAsPDF();
+            }
+        });
+    });
+
+    function getNoteMetadata() {
+        const content = editor.value || "";
+        const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+        const charCount = content.length;
+        
+        let sessionInfo = "";
+        if (isFlowModeActive) {
+            const mins = Math.floor(flowSecondsElapsed / 60);
+            const secs = flowSecondsElapsed % 60;
+            sessionInfo = ` | Active Flow Session: ${mins}m ${secs}s elapsed`;
+        }
+
+        return {
+            wordCount,
+            charCount,
+            timestamp: new Date().toLocaleString(),
+            sessionInfo
+        };
+    }
+
+    function exportAsHTML() {
+        const meta = getNoteMetadata();
+        const compiledContent = typeof marked !== 'undefined' ? marked.parse(editor.value || "*No content*") : (editor.value || "");
+        
+        const htmlOutput = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundScape Document Export</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: #1f2937;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fafafa;
+        }
+        article {
+            background: white;
+            padding: 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        h1, h2, h3 { color: #111827; margin-top: 1.5em; font-weight: 600; }
+        pre { background: #f3f4f6; padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid #e5e7eb; }
+        code { font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; }
+        .meta-footer {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 50px;
+            padding-top: 20px;
+            font-size: 0.85rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        ${compiledContent}
+    </article>
+    <div class="meta-footer">
+        <span>SoundScape Document</span>
+        <span>Date: ${meta.timestamp} | Words: ${meta.wordCount} | Characters: ${meta.charCount}${meta.sessionInfo}</span>
+    </div>
+</body>
+</html>`;
+
+        const blob = new Blob([htmlOutput], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `soundscape-note-${Date.now()}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function exportAsPDF() {
+        const meta = getNoteMetadata();
+        
+        let printMeta = document.getElementById("print-meta-header");
+        if (!printMeta) {
+            printMeta = document.createElement("div");
+            printMeta.id = "print-meta-header";
+            printMeta.className = "print-meta-header";
+        }
+        printMeta.innerHTML = `<strong>SoundScape Document Export</strong> | Date: ${meta.timestamp} | Words: ${meta.wordCount}${meta.sessionInfo}`;
+
+        // Temporarily put compiled html content into preview area for native printing view
+        if (typeof marked !== 'undefined') {
+            preview.innerHTML = marked.parse(editor.value || "*No content*");
+        } else {
+            preview.innerHTML = editor.value || "";
+        }
+        preview.insertBefore(printMeta, preview.firstChild);
+
+        // Trigger native browser print which provides PDF conversion options
+        window.print();
+    }
 
     // ==========================================
     // INITIALIZATION RUNNER
