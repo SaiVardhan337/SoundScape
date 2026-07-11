@@ -880,7 +880,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     aceEditorInstance.setOptions({
         showPrintMargin: false,
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Monaco', 'JetBrains Mono', monospace",
         fontSize: "14px",
         tabSize: 4,
         useSoftTabs: true
