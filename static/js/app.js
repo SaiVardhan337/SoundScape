@@ -372,8 +372,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ==========================================
+    // DYNAMIC PLAYLIST LOAD
+    // ==========================================
+    const trackSelect = document.getElementById("lofi-track-select");
+    
+    async function loadLofiPlaylist() {
+        try {
+            const response = await fetch("audio/playlist.json");
+            if (response.ok) {
+                const tracks = await response.json();
+                tracks.forEach(track => {
+                    const option = document.createElement("option");
+                    option.value = `audio/${track.filename}`;
+                    // Make track name look clean and readable
+                    option.textContent = `${track.title} (${track.category})`;
+                    trackSelect.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.warn("Could not load dynamic lofi playlist manifest:", e);
+        }
+    }
+
+    trackSelect.addEventListener("change", (e) => {
+        const selectedUrl = e.target.value;
+        sound.changeTrackSource("lofi", selectedUrl);
+    });
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
     updateTimerDisplay();
+    loadLofiPlaylist();
 });

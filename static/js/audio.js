@@ -141,6 +141,28 @@ class SoundEngine {
         }
     }
 
+    // Change the source URL of a loop dynamically (e.g. for swapping Lofi tracks)
+    changeTrackSource(name, newUrl) {
+        if (!this.initialized) this.init();
+        
+        const track = this.nodes[name];
+        if (track) {
+            const isPlaying = track.playing;
+            
+            // Pause current track
+            track.element.pause();
+            
+            // Update source
+            track.element.src = newUrl;
+            track.element.load();
+            
+            // Resume if it was playing previously
+            if (isPlaying) {
+                track.element.play().catch(e => console.warn(`Autoplay blocked on track source change: ${newUrl}`, e));
+            }
+        }
+    }
+
     // Update lowpass filter cutoff frequency based on typing speed (WPM)
     updateFilterCutoff(wpm, active) {
         if (!this.initialized) this.init();
