@@ -226,6 +226,185 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ==========================================
+    // CREATIVE FLOW MODE MANAGER
+    // ==========================================
+    const flowModeBtn = document.getElementById("flow-mode-btn");
+    const flowProgressContainer = document.getElementById("flow-progress-container");
+    const flowProgressBar = document.getElementById("flow-progress-bar");
+    
+    let isFlowModeActive = false;
+    let flowInterval = null;
+    let flowSecondsElapsed = 0;
+    const flowDurationSeconds = 15 * 60; // 15 Minute Flow Session
+    let flowIdleSeconds = 0;
+    
+    // Store pre-flow volumes so we can restore them when exiting flow mode
+    let savedVolumes = { lofi: 0, binaural: 0, rain: 0, forest: 0 };
+
+    // Programmatic Zen Tibetan Chime (synthesizer)
+    function playZenChime() {
+        const chimeCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc1 = chimeCtx.createOscillator();
+        const osc2 = chimeCtx.createOscillator();
+        const gainNode = chimeCtx.createGain();
+
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(440, chimeCtx.currentTime); // Fundamental A4
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(880, chimeCtx.currentTime); // Overtone A5
+
+        gainNode.gain.setValueAtTime(0, chimeCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.4, chimeCtx.currentTime + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, chimeCtx.currentTime + 3.0);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(chimeCtx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(chimeCtx.currentTime + 3.0);
+        osc2.stop(chimeCtx.currentTime + 3.0);
+    }
+
+    function toggleFlowMode() {
+        sound.init(); // Ensure audio context is ready
+        isFlowModeActive = !isFlowModeActive;
+
+        if (isFlowModeActive) {
+            // Enter Flow Mode
+            flowModeBtn.classList.add("active");
+            document.body.classList.add("flow-mode-active");
+            flowProgressContainer.classList.remove("hidden");
+            
+            // Turn on WPM meter dynamically
+            toggleReactive.checked = true;
+            wpmDisplay.classList.remove("hidden");
+            
+            // Save current volumes
+            Object.keys(savedVolumes).forEach(name => {
+                const slider = document.getElementById(`slider-${name}`);
+                savedVolumes[name] = slider ? Number(slider.value) : 0;
+            });
+
+            // Set immersive flow starting sounds: 60% Lofi + 15% Binaural Focus (Alpha)
+            const flowTargets = { lofi: 60, binaural: 15, rain: savedVolumes.rain, forest: savedVolumes.forest };
+            Object.keys(flowTargets).forEach(name => {
+                const slider = document.getElementById(`slider-${name}`);
+                if (slider) {
+                    slider.value = flowTargets[name];
+                    const label = document.getElementById(`val-${name}`);
+                    if (label) label.textContent = `${flowTargets[name]}%`;
+                }
+                sound.setVolume(name, flowTargets[name]);
+            });
+
+            // Force Binaural Beat mode to Alpha (10Hz)
+            document.querySelectorAll(".binaural-modes .mode-btn").forEach(b => {
+                b.classList.remove("active");
+                if (b.dataset.freq === "10") b.classList.add("active");
+            });
+            sound.setBinauralFrequency(10);
+
+            // Reset session tracking
+            flowSecondsElapsed = 0;
+            flowIdleSeconds = 0;
+            flowProgressBar.style.width = "0%";
+
+            // Start ticking interval
+            flowInterval = setInterval(() => {
+                flowSecondsElapsed++;
+                
+                // Update progress bar
+                const pct = (flowSecondsElapsed / flowDurationSeconds) * 100;
+                flowProgressBar.style.width = `${pct}%`;
+
+                // Handle dynamic volume modulation based on writing activity
+                if (currentWPM > 5) {
+                    // Active typing: swell music to full target volumes
+                    flowIdleSeconds = 0;
+                    sound.setVolume("lofi", 60);
+                    sound.setVolume("binaural", 15);
+                    
+                    const lofiSlider = document.getElementById("slider-lofi");
+                    if (lofiSlider) {
+                        lofiSlider.value = 60;
+                        document.getElementById("val-lofi").textContent = "60%";
+                    }
+                    const binSlider = document.getElementById("slider-binaural");
+                    if (binSlider) {
+                        binSlider.value = 15;
+                        document.getElementById("val-binaural").textContent = "15%";
+                    }
+                } else {
+                    // Paused typing (idle)
+                    flowIdleSeconds++;
+                    if (flowIdleSeconds >= 6) {
+                        // After 6s idle, dim tracks to let user think quietly
+                        sound.setVolume("lofi", 20);      // Drop lofi to 20%
+                        sound.setVolume("binaural", 5);     // Drop focus tones to 5%
+                        
+                        const lofiSlider = document.getElementById("slider-lofi");
+                        if (lofiSlider) {
+                            lofiSlider.value = 20;
+                            document.getElementById("val-lofi").textContent = "20%";
+                        }
+                        const binSlider = document.getElementById("slider-binaural");
+                        if (binSlider) {
+                            binSlider.value = 5;
+                            document.getElementById("val-binaural").textContent = "5%";
+                        }
+                    }
+                }
+
+                // Check for session completion
+                if (flowSecondsElapsed >= flowDurationSeconds) {
+                    playZenChime();
+                    
+                    // Immersive flash of green glow on success
+                    const glow = document.getElementById("glow");
+                    glow.style.background = "radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 100%)";
+                    setTimeout(() => { glow.style.background = ""; }, 10000);
+                    
+                    // Exit flow mode
+                    toggleFlowMode();
+                }
+            }, 1000);
+
+            console.log("Creative Flow Mode: Activated.");
+
+        } else {
+            // Exit Flow Mode
+            flowModeBtn.classList.remove("active");
+            document.body.classList.remove("flow-mode-active");
+            flowProgressContainer.classList.add("hidden");
+            
+            clearInterval(flowInterval);
+            flowInterval = null;
+
+            // Turn off WPM meter unless reactivated
+            toggleReactive.checked = false;
+            wpmDisplay.classList.add("hidden");
+            sound.updateFilterCutoff(0, false); // Restore filter to open
+
+            // Restore saved pre-flow volumes
+            Object.keys(savedVolumes).forEach(name => {
+                const slider = document.getElementById(`slider-${name}`);
+                if (slider) {
+                    slider.value = savedVolumes[name];
+                    const label = document.getElementById(`val-${name}`);
+                    if (label) label.textContent = `${savedVolumes[name]}%`;
+                }
+                sound.setVolume(name, savedVolumes[name]);
+            });
+
+            console.log("Creative Flow Mode: Deactivated.");
+        }
+    }
+
+    flowModeBtn.addEventListener("click", toggleFlowMode);
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();

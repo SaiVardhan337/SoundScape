@@ -31,6 +31,9 @@
                 <span class="badge">Local Engine</span>
             </div>
             <div class="header-actions">
+                <button id="flow-mode-btn" class="header-btn flow-btn" title="Toggle Creative Flow Mode">
+                    <i class="fa-solid fa-wind"></i> Flow Mode
+                </button>
                 <div id="save-status" class="save-status">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Connected
                 </div>
@@ -117,6 +120,10 @@
 
                 <!-- MARKDOWN NOTEPAD -->
                 <section class="glass-card notepad-card">
+                    <!-- Flow Mode Progress Bar -->
+                    <div id="flow-progress-container" class="flow-progress-container hidden">
+                        <div id="flow-progress-bar" class="flow-progress-bar"></div>
+                    </div>
                     <div class="notepad-header">
                         <div class="notepad-tabs">
                             <button id="edit-tab-btn" class="notepad-tab active"><i class="fa-solid fa-pen-nib"></i> Editor</button>
