@@ -1465,5 +1465,102 @@ body.light-theme .pdf-upload-tray {
     font-size: 0.88rem !important;
 }
 
+/* WALLPAPER SECTION & STYLING */
+.wallpaper-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.wallpaper-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    padding: 6px 8px;
+    border-radius: 10px;
+    font-size: 0.74rem;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+body.light-theme .wallpaper-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.04);
+    color: var(--text-secondary);
+}
+
+.wallpaper-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+body.light-theme .wallpaper-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+}
+
+.wallpaper-btn.active {
+    background: var(--primary-gradient);
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+/* DYNAMIC BODY BACKGROUNDS WITH COLOR BLEND OVERLAYS */
+body {
+    transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+/* Hide ambient glow blobs if a custom wallpaper is active */
+body[class*="wp-"] .ambient-glow {
+    opacity: 0.15; /* Subtly blend shifting colors in top of the wallpaper image */
+}
+
+/* Dark theme overlays (blend with dark indigo) */
+body.wp-typewriter {
+    background: linear-gradient(rgba(11, 15, 25, 0.45), rgba(11, 15, 25, 0.45)), url('../images/typewriter.png');
+}
+
+body.wp-server {
+    background: linear-gradient(rgba(11, 15, 25, 0.35), rgba(11, 15, 25, 0.35)), url('../images/server.png');
+}
+
+body.wp-cabin {
+    background: linear-gradient(rgba(11, 15, 25, 0.4), rgba(11, 15, 25, 0.4)), url('../images/cabin.png');
+}
+
+body.wp-tokyo {
+    background: linear-gradient(rgba(11, 15, 25, 0.35), rgba(11, 15, 25, 0.35)), url('../images/tokyo.jpg');
+}
+
+/* Light theme overlays (blend with frosted white) */
+body.light-theme.wp-typewriter {
+    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/typewriter.png');
+}
+
+body.light-theme.wp-server {
+    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/server.png');
+}
+
+body.light-theme.wp-cabin {
+    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/cabin.png');
+}
+
+body.light-theme.wp-tokyo {
+    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/tokyo.jpg');
+}
+
+
 
 

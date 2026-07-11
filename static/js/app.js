@@ -684,6 +684,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
+    // WALLPAPER / THEME BACKGROUND MANAGER
+    // ==========================================
+    const wallpaperBtns = document.querySelectorAll(".wallpaper-btn");
+    
+    function setWallpaper(wpName) {
+        // Clear old wp classes from body
+        document.body.className = document.body.className.split(" ").filter(c => !c.startsWith("wp-")).join(" ");
+        
+        if (wpName !== "glow") {
+            document.body.classList.add(`wp-${wpName}`);
+        }
+        
+        wallpaperBtns.forEach(btn => {
+            btn.classList.remove("active");
+            if (btn.dataset.wallpaper === wpName) btn.classList.add("active");
+        });
+        
+        localStorage.setItem("wallpaper", wpName);
+    }
+    
+    // Load initial cached wallpaper
+    const cachedWp = localStorage.getItem("wallpaper") || "glow";
+    setWallpaper(cachedWp);
+    
+    wallpaperBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const wp = e.currentTarget.dataset.wallpaper;
+            setWallpaper(wp);
+        });
+    });
+
+    // ==========================================
     // MULTI-WORKSPACE COORDINATOR
     // ==========================================
     const switcherBtns = document.querySelectorAll(".switcher-btn");
@@ -706,7 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const targetPanel = document.getElementById(`${ws}-workspace`);
             if (targetPanel) targetPanel.classList.remove("hidden");
 
-            // Auto-binaural sweeps matching task profiles
+            // Auto-binaural sweeps and wallpaper transitions matching task profiles
             if (ws === "coding") {
                 // Set Coding Binaural Beat (15Hz Beta)
                 sound.setBinauralFrequency(15);
@@ -714,6 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "15") b.classList.add("active");
                 });
+                setWallpaper("tokyo");
             } else if (ws === "writing") {
                 // Set Writing Binaural Beat (6Hz Theta)
                 sound.setBinauralFrequency(6);
@@ -721,6 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "6") b.classList.add("active");
                 });
+                setWallpaper("typewriter");
             } else if (ws === "pdf") {
                 // Set Reading Binaural Beat (10Hz Alpha)
                 sound.setBinauralFrequency(10);
@@ -728,6 +762,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "10") b.classList.add("active");
                 });
+                setWallpaper("cabin");
             }
         });
     });
