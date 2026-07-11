@@ -6,7 +6,6 @@ class SoundEngine {
         
         // Audio Node references
         this.nodes = {
-            pink: null,
             binaural: {
                 leftOsc: null,
                 rightOsc: null,
@@ -20,14 +19,13 @@ class SoundEngine {
         // Gain (volume) Node references
         this.gains = {
             master: null,
-            pink: null,
             binaural: null,
             rain: null,
             forest: null,
             lofi: null
         };
 
-        // Local URL mappings downloaded directly from YouTube links
+        // Stream URL mappings (optimized, highly stable CC/royalty-free audio loops)
         this.urls = {
             rain: "audio/rain.mp3",
             forest: "audio/forest.mp3",
@@ -59,7 +57,6 @@ class SoundEngine {
         this.filterNode.connect(this.gains.master);
 
         // Setup individual mixers (Connect them to the filterNode instead of master)
-        this.setupPinkNoise();
         this.setupBinauralBeats();
         this.setupLoopAudio('rain');
         this.setupLoopAudio('forest');
@@ -67,38 +64,6 @@ class SoundEngine {
 
         this.initialized = true;
         console.log("SoundScape Audio Engine initialized. Ambient paths loaded.");
-    }
-
-    // Programmatically synthesize Pink Noise (soft, balanced, leaf-rustle sound)
-    // Uses Paul Kellet's refined method to generate accurate 1/f spectral density.
-    setupPinkNoise() {
-        this.gains.pink = this.ctx.createGain();
-        this.gains.pink.gain.value = 0.0;
-        this.gains.pink.connect(this.filterNode); // Route to filter
-
-        const bufferSize = 10 * this.ctx.sampleRate; // 10 seconds of unique noise
-        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-
-        let b0 = 0.0, b1 = 0.0, b2 = 0.0, b3 = 0.0, b4 = 0.0, b5 = 0.0, b6 = 0.0;
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            b0 = 0.99886 * b0 + white * 0.0555179;
-            b1 = 0.99332 * b1 + white * 0.0750759;
-            b2 = 0.96900 * b2 + white * 0.1538520;
-            b3 = 0.86650 * b3 + white * 0.3104856;
-            b4 = 0.55000 * b4 + white * 0.5329522;
-            b5 = -0.7616 * b5 - white * 0.0168980;
-            const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-            b6 = white * 0.115926;
-            output[i] = pink * 0.11; // scale to prevent clipping and match standard levels
-        }
-
-        this.nodes.pink = this.ctx.createBufferSource();
-        this.nodes.pink.buffer = noiseBuffer;
-        this.nodes.pink.loop = true;
-        this.nodes.pink.connect(this.gains.pink);
-        this.nodes.pink.start(0);
     }
 
     // Synthesize Binaural Focus Beats (L/R phase difference)

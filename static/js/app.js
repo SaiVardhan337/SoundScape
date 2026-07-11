@@ -130,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // SOUND MIXER CONTROLLER
     // ==========================================
     const sliders = {
-        pink: document.getElementById("slider-pink"),
         binaural: document.getElementById("slider-binaural"),
         rain: document.getElementById("slider-rain"),
         forest: document.getElementById("slider-forest"),
@@ -138,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const valLabels = {
-        pink: document.getElementById("val-pink"),
         binaural: document.getElementById("val-binaural"),
         rain: document.getElementById("val-rain"),
         forest: document.getElementById("val-forest"),
@@ -172,12 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
             : '<i class="fa-solid fa-volume-high"></i>';
     });
 
-    // Presets mapped to the new Pink Noise generator
+    // Presets mapped without Pink Noise
     const presets = {
-        lofi:   { lofi: 60, rain: 25, pink: 15, forest: 0, binaural: 0 },
-        forest: { forest: 65, rain: 20, lofi: 0, pink: 0, binaural: 10 },
-        sleepy: { rain: 60, pink: 40, forest: 0, lofi: 0, binaural: 0 },
-        clear:  { pink: 0, binaural: 0, rain: 0, forest: 0, lofi: 0 }
+        lofi:   { lofi: 60, rain: 25, forest: 0, binaural: 0 },
+        forest: { forest: 65, rain: 20, lofi: 0, binaural: 10 },
+        sleepy: { rain: 60, forest: 0, lofi: 0, binaural: 0 },
+        clear:  { binaural: 0, rain: 0, forest: 0, lofi: 0 }
     };
 
     document.querySelectorAll(".presets-row .preset-btn").forEach(btn => {
