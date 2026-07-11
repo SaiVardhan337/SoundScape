@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundScape — Ambient Focus Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js and Marked.js CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="ambient-glow" id="glow"></div>
+    
+    <div class="dashboard-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="logo">
+                <i class="fa-solid fa-wand-magic-sparkles brand-icon"></i>
+                <h1>SoundScape</h1>
+                <span class="badge">Local Engine</span>
+            </div>
+            <div class="header-actions">
+                <button id="toggle-stats-btn" class="header-btn" title="View Focus Stats">
+                    <i class="fa-solid fa-chart-simple"></i> Stats
+                </button>
+                <div id="save-status" class="save-status">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Connected
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="dashboard-grid">
+            
+            <!-- LEFT PANEL: SOUND MIXER -->
+            <section class="panel glass-card sound-mixer-panel">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-sliders"></i> Ambient Mixer</h2>
+                    <button id="master-mute-btn" class="icon-btn" title="Master Mute"><i class="fa-solid fa-volume-high"></i></button>
+                </div>
+                
+                <div class="presets-row">
+                    <button class="preset-btn" data-preset="lofi"><i class="fa-solid fa-headphones"></i> Lofi Code</button>
+                    <button class="preset-btn" data-preset="forest"><i class="fa-solid fa-tree"></i> Forest Walk</button>
+                    <button class="preset-btn" data-preset="sleepy"><i class="fa-solid fa-cloud-moon"></i> Sleepy Night</button>
+                    <button class="preset-btn" data-preset="clear"><i class="fa-solid fa-trash-can"></i> Mute</button>
+                </div>
+
+                <!-- Interactive Soundscape Toggles -->
+                <div class="toggles-container">
+                    <label class="toggle-control full-width">
+                        <input type="checkbox" id="toggle-reactive">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-name"><i class="fa-solid fa-gauge-high"></i> Flow Filter (Slow & Gentle)</span>
+                    </label>
+                </div>
+
+                <div class="sliders-container">
+                    <!-- Synthesized Ambient -->
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-wind"></i> Pink Noise</span>
+                            <span class="volume-val" id="val-pink">0%</span>
+                        </div>
+                        <input type="range" id="slider-pink" min="0" max="100" value="0" class="sound-slider">
+                    </div>
+
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-wave-square"></i> Binaural Focus</span>
+                            <span class="volume-val" id="val-binaural">0%</span>
+                        </div>
+                        <input type="range" id="slider-binaural" min="0" max="100" value="0" class="sound-slider">
+                        <!-- Frequency selector for binaural -->
+                        <div class="binaural-modes">
+                            <button class="mode-btn active" data-freq="10" title="Alpha (Relaxed Focus)">Alpha (10Hz)</button>
+                            <button class="mode-btn" data-freq="15" title="Beta (Active Problem Solving)">Beta (15Hz)</button>
+                            <button class="mode-btn" data-freq="6" title="Theta (Deep Meditation/Sleep)">Theta (6Hz)</button>
+                        </div>
+                    </div>
+
+                    <hr class="separator">
+
+                    <!-- Streamed Premium Ambient Loops -->
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-cloud-showers-heavy"></i> Rain & Thunder</span>
+                            <span class="volume-val" id="val-rain">0%</span>
+                        </div>
+                        <input type="range" id="slider-rain" min="0" max="100" value="0" class="sound-slider">
+                    </div>
+
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-feather"></i> Forest Birds</span>
+                            <span class="volume-val" id="val-forest">0%</span>
+                        </div>
+                        <input type="range" id="slider-forest" min="0" max="100" value="0" class="sound-slider">
+                    </div>
+
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-compact-disc"></i> Lofi Study Beats</span>
+                            <span class="volume-val" id="val-lofi">0%</span>
+                        </div>
+                        <input type="range" id="slider-lofi" min="0" max="100" value="0" class="sound-slider">
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER & RIGHT COMBINED WORKSPACE -->
+            <div class="workspace-area">
+                
+                <!-- TIMER COMPONENT -->
+                <section class="glass-card timer-card">
+                    <div class="timer-modes">
+                        <button class="timer-mode-btn active" data-time="25">Pomodoro</button>
+                        <button class="timer-mode-btn" data-time="5">Short Break</button>
+                        <button class="timer-mode-btn" data-time="15">Long Break</button>
+                    </div>
+                    
+                    <div class="timer-display-container">
+                        <!-- Circular progress timer -->
+                        <div class="progress-ring-box">
+                            <svg class="progress-ring" width="180" height="180">
+                                <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="6" fill="transparent" r="80" cx="90" cy="90"/>
+                                <circle class="progress-ring__circle" id="timer-progress" stroke="#8b5cf6" stroke-width="6" fill="transparent" r="80" cx="90" cy="90"/>
+                            </svg>
+                            <div class="timer-text" id="timer-countdown">25:00</div>
+                        </div>
+                        
+                        <div class="timer-controls">
+                            <button id="timer-play-btn" class="timer-ctrl-btn primary" title="Play"><i class="fa-solid fa-play"></i></button>
+                            <button id="timer-reset-btn" class="timer-ctrl-btn" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MARKDOWN NOTEPAD -->
+                <section class="glass-card notepad-card">
+                    <div class="notepad-header">
+                        <div class="notepad-tabs">
+                            <button id="edit-tab-btn" class="notepad-tab active"><i class="fa-solid fa-pen-nib"></i> Editor</button>
+                            <button id="preview-tab-btn" class="notepad-tab"><i class="fa-solid fa-eye"></i> Preview</button>
+                        </div>
+                        <div class="editor-meta">
+                            <span id="wpm-display" class="wpm-display-badge hidden">0 WPM</span>
+                            <span id="autosave-indicator" class="autosave-indicator">Saved</span>
+                        </div>
+                    </div>
+                    
+                    <div class="notepad-body">
+                        <textarea id="note-editor" class="note-textarea" placeholder="Start typing notes in markdown format..."></textarea>
+                        <div id="note-preview" class="note-preview-area hidden"></div>
+                    </div>
+                </section>
+            </div>
+            
+        </main>
+        
+        <!-- SLIDE-OVER STATS OVERLAY -->
+        <div id="stats-overlay" class="stats-overlay hidden">
+            <div class="stats-drawer glass-card">
+                <div class="drawer-header">
+                    <h3><i class="fa-solid fa-chart-line"></i> Focus Analytics</h3>
+                    <button id="close-stats-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="drawer-body">
+                    <div class="stats-summary-grid">
+                        <div class="summary-card">
+                            <span class="summary-label">Sessions Completed (Last 7 Days)</span>
+                            <span class="summary-val" id="total-sessions-val">0</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Total Time Focused</span>
+                            <span class="summary-val" id="total-hours-val">0 mins</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="focusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Web Audio & App Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
