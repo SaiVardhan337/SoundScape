@@ -1,6 +1,6 @@
-# SoundScape 🎧✨
+# SoundScape - An Ambient Writing Workspace 🎧✨
 
-SoundScape is an offline-first ambient sound mixer, Pomodoro timer, and distraction-free markdown notepad designed specifically for developers, writers, and students. 
+SoundScape is an offline-first ambient writing workspace, sound mixer, and Pomodoro timer designed specifically to help developers, writers, and students get into their flow state. 
 
 This repository showcases a modern, high-polish application combining a **Python (FastAPI + SQLite)** backend with a custom **HTML5/CSS/JavaScript (Web Audio API)** frontend.
 
