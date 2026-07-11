@@ -731,6 +731,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const ws = e.currentTarget.dataset.workspace;
             activeWorkspace = ws;
             
+            // Update workspace classes on body
+            document.body.classList.remove("ws-writing", "ws-coding", "ws-pdf");
+            document.body.classList.add(`ws-${ws}`);
+            
             workspacePanels.forEach(panel => {
                 panel.classList.add("hidden");
             });

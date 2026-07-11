@@ -33,6 +33,20 @@ body.light-theme .note-preview-area {
     color: var(--text-primary);
 }
 
+/* Rich, muted workspace-specific dark backgrounds */
+body.ws-writing:not(.light-theme) {
+    --bg-base: #120b18; /* Midnight Purple/Plum */
+}
+
+body.ws-coding:not(.light-theme) {
+    --bg-base: #060b17; /* Midnight Blue */
+}
+
+body.ws-pdf:not(.light-theme) {
+    --bg-base: #040c0a; /* Midnight Spruce Green */
+}
+
+
 /* Typography styles for headings */
 h1, h2, h3, .logo-text h1, .tab-title, .panel-header h2 {
     font-family: 'Playfair Display', serif;
