@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("/api/notes");
             if (response.ok) {
                 const note = await response.json();
-                editor.value = note.content;
+                editor.innerHTML = note.content || "";
             }
         } catch (e) {
             console.error("Failed to load workspace note:", e);
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof updateWordGoalProgress === "function") updateWordGoalProgress();
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
-            saveWorkspaceNote(e.target.value);
+            saveWorkspaceNote(editor.innerHTML);
         }, 1200);
     });
 
@@ -109,9 +109,77 @@ document.addEventListener("DOMContentLoaded", () => {
         editTabBtn.classList.remove("active");
         editor.classList.add("hidden");
         preview.classList.remove("hidden");
-        // Convert Markdown text to HTML using marked.js
-        preview.innerHTML = marked.parse(editor.value || "*No text yet. Start writing in the editor.*");
+        preview.innerHTML = editor.innerHTML || "*No text yet. Start writing in the editor.*";
     });
+
+    // ==========================================
+    // MICROSOFT WORD FORMATTING TOOLBAR
+    // ==========================================
+    const rtBold = document.getElementById("rt-bold");
+    const rtItalic = document.getElementById("rt-italic");
+    const rtUnderline = document.getElementById("rt-underline");
+    const rtStrikethrough = document.getElementById("rt-strikethrough");
+    const rtAlignLeft = document.getElementById("rt-align-left");
+    const rtAlignCenter = document.getElementById("rt-align-center");
+    const rtAlignRight = document.getElementById("rt-align-right");
+    const rtAlignJustify = document.getElementById("rt-align-justify");
+    const rtFontSelect = document.getElementById("rt-font-select");
+    const rtSizeSelect = document.getElementById("rt-size-select");
+    const rtColorBtn = document.getElementById("rt-color-btn");
+    const rtColorPicker = document.getElementById("rt-color-picker");
+    const rtListUl = document.getElementById("rt-list-ul");
+    const rtListOl = document.getElementById("rt-list-ol");
+    const rtClearFormat = document.getElementById("rt-clear-format");
+
+    function execFormat(cmd, value = null) {
+        document.execCommand(cmd, false, value);
+        editor.focus();
+        
+        // Trigger autosave
+        saveIndicator.textContent = "Saving...";
+        if (typeof updateWordGoalProgress === "function") updateWordGoalProgress();
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            saveWorkspaceNote(editor.innerHTML);
+        }, 1200);
+    }
+
+    if (rtBold) rtBold.addEventListener("click", () => execFormat("bold"));
+    if (rtItalic) rtItalic.addEventListener("click", () => execFormat("italic"));
+    if (rtUnderline) rtUnderline.addEventListener("click", () => execFormat("underline"));
+    if (rtStrikethrough) rtStrikethrough.addEventListener("click", () => execFormat("strikeThrough"));
+    if (rtAlignLeft) rtAlignLeft.addEventListener("click", () => execFormat("justifyLeft"));
+    if (rtAlignCenter) rtAlignCenter.addEventListener("click", () => execFormat("justifyCenter"));
+    if (rtAlignRight) rtAlignRight.addEventListener("click", () => execFormat("justifyRight"));
+    if (rtAlignJustify) rtAlignJustify.addEventListener("click", () => execFormat("justifyFull"));
+    
+    if (rtFontSelect) {
+        rtFontSelect.addEventListener("change", (e) => {
+            execFormat("fontName", e.target.value);
+        });
+    }
+    
+    if (rtSizeSelect) {
+        rtSizeSelect.addEventListener("change", (e) => {
+            execFormat("fontSize", e.target.value);
+        });
+    }
+
+    if (rtColorPicker) {
+        rtColorPicker.addEventListener("input", (e) => {
+            execFormat("foreColor", e.target.value);
+        });
+    }
+    
+    if (rtColorBtn && rtColorPicker) {
+        rtColorBtn.addEventListener("click", () => {
+            rtColorPicker.click();
+        });
+    }
+
+    if (rtListUl) rtListUl.addEventListener("click", () => execFormat("insertUnorderedList"));
+    if (rtListOl) rtListOl.addEventListener("click", () => execFormat("insertOrderedList"));
+    if (rtClearFormat) rtClearFormat.addEventListener("click", () => execFormat("removeFormat"));
 
     // ==========================================
     // INTERACTIVE SOUNDSCAPE & WPM CALCULATOR
@@ -124,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Track key presses globally (for WPM and Typewriter sound synthesis)
     document.addEventListener("keydown", (e) => {
         const tag = e.target.tagName.toLowerCase();
-        const isInput = tag === "textarea" || tag === "input" || e.target.classList.contains("ace_text-input");
+        const isInput = tag === "textarea" || tag === "input" || e.target.id === "note-editor" || e.target.classList.contains("ace_text-input");
         if (!isInput) return;
         
         // Log keypress timestamp for WPM calculation
@@ -499,7 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function getNoteMetadata() {
-        const content = editor.value || "";
+        const content = editor.innerText || "";
         const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
         const charCount = content.length;
         
@@ -520,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function exportAsHTML() {
         const meta = getNoteMetadata();
-        const compiledContent = typeof marked !== 'undefined' ? marked.parse(editor.value || "*No content*") : (editor.value || "");
+        const compiledContent = editor.innerHTML || "";
         
         const htmlOutput = `<!DOCTYPE html>
 <html lang="en">
@@ -591,11 +659,7 @@ document.addEventListener("DOMContentLoaded", () => {
         printMeta.innerHTML = `<strong>SoundScape Document Export</strong> | Date: ${meta.timestamp} | Words: ${meta.wordCount}${meta.sessionInfo}`;
 
         // Temporarily put compiled html content into preview area for native printing view
-        if (typeof marked !== 'undefined') {
-            preview.innerHTML = marked.parse(editor.value || "*No content*");
-        } else {
-            preview.innerHTML = editor.value || "";
-        }
+        preview.innerHTML = editor.innerHTML || "";
         preview.insertBefore(printMeta, preview.firstChild);
 
         // Trigger native browser print which provides PDF conversion options
@@ -792,7 +856,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateWordGoalProgress() {
         if (targetWordGoal <= 0) return;
-        const text = editor.value || "";
+        const text = editor.innerText || "";
         const words = text.trim() ? text.trim().split(/\s+/).length : 0;
         const pct = Math.min((words / targetWordGoal) * 100, 100);
         goalProgressBar.style.setProperty("--progress-pct", `${pct}%`);

@@ -1604,6 +1604,112 @@ body.ws-pdf :not(.fa):not(.fab):not(.fad):not(.fal):not(.far):not(.fas):not(i) {
     font-family: 'Lora', serif !important;
 }
 
+/* RICH WORD TOOLBAR STYLES */
+.rich-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.light-theme .rich-toolbar {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.rt-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+
+body.light-theme .rt-select {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+.rt-select:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rt-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.rt-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+body.light-theme .rt-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.rt-btn.active {
+    background: var(--primary-gradient);
+    color: white !important;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border-color);
+    margin: 0 4px;
+}
+
+.color-picker-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.rt-color-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* CONTENTEDITABLE PLACEHOLDER & BEHAVIOR */
+.contenteditable-editor {
+    outline: none;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    text-align: left;
+    min-height: 400px;
+}
+
+.contenteditable-editor:empty:before {
+    content: attr(placeholder);
+    color: var(--text-secondary);
+    opacity: 0.5;
+    cursor: text;
+}
+
+
 
 
 

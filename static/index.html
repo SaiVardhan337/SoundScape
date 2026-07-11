@@ -199,8 +199,65 @@
                             <p id="prompt-display-text" class="prompt-text">Start writing about your favorite ambient memory...</p>
                         </div>
 
+                        <div class="rich-toolbar">
+                            <!-- Font Family -->
+                            <select id="rt-font-select" class="rt-select" title="Font Family">
+                                <option value="Cinzel">Cinzel</option>
+                                <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta</option>
+                                <option value="'Playfair Display', serif">Playfair</option>
+                                <option value="'Lora', serif">Lora</option>
+                                <option value="'Monaco', monospace">Monaco</option>
+                                <option value="Arial, sans-serif">Arial</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="Georgia, serif">Georgia</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                            </select>
+                            
+                            <!-- Font Size -->
+                            <select id="rt-size-select" class="rt-select" title="Font Size">
+                                <option value="3">14px</option>
+                                <option value="1">10px</option>
+                                <option value="2">12px</option>
+                                <option value="4">16px</option>
+                                <option value="5">18px</option>
+                                <option value="6">24px</option>
+                                <option value="7">32px</option>
+                            </select>
+                            
+                            <div class="toolbar-separator"></div>
+                            
+                            <!-- Formatting Toggles -->
+                            <button class="rt-btn" id="rt-bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                            <button class="rt-btn" id="rt-italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                            <button class="rt-btn" id="rt-underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                            <button class="rt-btn" id="rt-strikethrough" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
+                            
+                            <div class="toolbar-separator"></div>
+
+                            <!-- Alignment -->
+                            <button class="rt-btn" id="rt-align-left" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+                            <button class="rt-btn" id="rt-align-center" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+                            <button class="rt-btn" id="rt-align-right" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+                            <button class="rt-btn" id="rt-align-justify" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
+                            
+                            <div class="toolbar-separator"></div>
+
+                            <!-- Color Picker -->
+                            <div class="color-picker-container">
+                                <button class="rt-btn" id="rt-color-btn" title="Text Color"><i class="fa-solid fa-palette"></i></button>
+                                <input type="color" id="rt-color-picker" value="#fafaf9" class="rt-color-input">
+                            </div>
+
+                            <div class="toolbar-separator"></div>
+
+                            <!-- Lists & Blocks -->
+                            <button class="rt-btn" id="rt-list-ul" title="Unordered List"><i class="fa-solid fa-list-ul"></i></button>
+                            <button class="rt-btn" id="rt-list-ol" title="Ordered List"><i class="fa-solid fa-list-ol"></i></button>
+                            <button class="rt-btn" id="rt-clear-format" title="Clear Formatting"><i class="fa-solid fa-remove-format"></i></button>
+                        </div>
+
                         <div class="notepad-body">
-                            <textarea id="note-editor" class="note-textarea" placeholder="Start typing notes in markdown format..."></textarea>
+                            <div id="note-editor" class="note-textarea contenteditable-editor" contenteditable="true" placeholder="Start typing notes here..."></div>
                             <div id="note-preview" class="note-preview-area hidden"></div>
                         </div>
                     </section>
