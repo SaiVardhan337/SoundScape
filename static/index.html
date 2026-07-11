@@ -31,9 +31,6 @@
                 <span class="badge">Local Engine</span>
             </div>
             <div class="header-actions">
-                <button id="toggle-stats-btn" class="header-btn" title="View Focus Stats">
-                    <i class="fa-solid fa-chart-simple"></i> Stats
-                </button>
                 <div id="save-status" class="save-status">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Connected
                 </div>
@@ -78,7 +75,7 @@
                         <div class="binaural-modes">
                             <button class="mode-btn active" data-freq="10" title="Alpha (Relaxed Focus)">Alpha (10Hz)</button>
                             <button class="mode-btn" data-freq="15" title="Beta (Active Problem Solving)">Beta (15Hz)</button>
-                            <button class="mode-btn" data-freq="6" title="Theta (Deep Meditation/Sleep)">Theta (6Hz)</button>
+                            <button class="mode-btn" data-freq="6" title="Theta (Deep Meditation)">Theta (6Hz)</button>
                         </div>
                     </div>
 
@@ -117,31 +114,6 @@
 
             <!-- CENTER & RIGHT COMBINED WORKSPACE -->
             <div class="workspace-area">
-                
-                <!-- TIMER COMPONENT -->
-                <section class="glass-card timer-card">
-                    <div class="timer-modes">
-                        <button class="timer-mode-btn active" data-time="25">Pomodoro</button>
-                        <button class="timer-mode-btn" data-time="5">Short Break</button>
-                        <button class="timer-mode-btn" data-time="15">Long Break</button>
-                    </div>
-                    
-                    <div class="timer-display-container">
-                        <!-- Circular progress timer -->
-                        <div class="progress-ring-box">
-                            <svg class="progress-ring" width="180" height="180">
-                                <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="6" fill="transparent" r="80" cx="90" cy="90"/>
-                                <circle class="progress-ring__circle" id="timer-progress" stroke="#8b5cf6" stroke-width="6" fill="transparent" r="80" cx="90" cy="90"/>
-                            </svg>
-                            <div class="timer-text" id="timer-countdown">25:00</div>
-                        </div>
-                        
-                        <div class="timer-controls">
-                            <button id="timer-play-btn" class="timer-ctrl-btn primary" title="Play"><i class="fa-solid fa-play"></i></button>
-                            <button id="timer-reset-btn" class="timer-ctrl-btn" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- MARKDOWN NOTEPAD -->
                 <section class="glass-card notepad-card">
