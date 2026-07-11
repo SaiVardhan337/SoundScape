@@ -1,6 +1,6 @@
 import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime
-from database import Base
+from api.database import Base
 
 class MarkdownNote(Base):
     __tablename__ = "markdown_notes"

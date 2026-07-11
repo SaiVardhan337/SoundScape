@@ -6,8 +6,8 @@ from sqlalchemy import func
 import datetime
 from typing import List, Dict
 
-import models
-from database import engine, get_db
+import api.models as models
+from api.database import engine, get_db
 
 # Create the SQLite tables on startup
 models.Base.metadata.create_all(bind=engine)
@@ -26,8 +26,6 @@ app.add_middleware(
 # Notes Endpoints
 @app.get("/api/notes")
 def get_note(db: Session = Depends(get_db)):
-    # SoundScape maintains a single, persistent workspace note for simplicity.
-    # Create it if it doesn't exist yet.
     note = db.query(models.MarkdownNote).first()
     if not note:
         note = models.MarkdownNote(title="Workspace Note", content="# Welcome to SoundScape\n\nStart typing your thoughts, tasks, or code snippets here...")
@@ -70,12 +68,9 @@ def log_session(payload: Dict[str, int], db: Session = Depends(get_db)):
 
 @app.get("/api/stats")
 def get_focus_stats(db: Session = Depends(get_db)):
-    # Group sessions by date for the last 7 days and sum duration
     today = datetime.date.today()
     seven_days_ago = today - datetime.timedelta(days=7)
     
-    # We query the database, converting the completed_at timestamp to date for grouping.
-    # Note: SQLite date() function helps convert datetime strings
     results = db.query(
         func.date(models.FocusSession.completed_at).label("date"),
         func.sum(models.FocusSession.duration_minutes).label("total_minutes")
@@ -84,15 +79,13 @@ def get_focus_stats(db: Session = Depends(get_db)):
      .order_by(func.date(models.FocusSession.completed_at))\
      .all()
 
-    # Fill in zeros for days in the last week that had no sessions
     stats_dict = { (today - datetime.timedelta(days=i)).strftime("%Y-%m-%d"): 0 for i in range(7) }
     for res in results:
         if res.date in stats_dict:
             stats_dict[res.date] = int(res.total_minutes)
             
-    # Sort chronological
     sorted_stats = [{"date": k, "minutes": v} for k, v in sorted(stats_dict.items())]
     return sorted_stats
 
-# Mount the static site directories
+# Mount the static site directories for local uvicorn running
 app.mount("/", StaticFiles(directory="static", html=True), name="static")

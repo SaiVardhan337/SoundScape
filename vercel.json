@@ -1,31 +1,24 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "main.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "main.py"
+      "source": "/api/(.*)",
+      "destination": "/api/index"
     },
     {
-      "src": "/css/(.*)",
-      "dest": "/static/css/$1"
+      "source": "/css/(.*)",
+      "destination": "/static/css/$1"
     },
     {
-      "src": "/js/(.*)",
-      "dest": "/static/js/$1"
+      "source": "/js/(.*)",
+      "destination": "/static/js/$1"
     },
     {
-      "src": "/audio/(.*)",
-      "dest": "/static/audio/$1"
+      "source": "/audio/(.*)",
+      "destination": "/static/audio/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/static/index.html"
+      "source": "/(.*)",
+      "destination": "/static/index.html"
     }
   ]
 }
