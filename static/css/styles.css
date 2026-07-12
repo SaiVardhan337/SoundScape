@@ -1576,6 +1576,7 @@ body[class*="wp-"] .ambient-glow {
 }
 
 /* Dark theme overlays (blend with dark indigo) */
+/* Dark theme wallpaper overlays */
 body:not(.light-theme).wp-typewriter {
     background-image: linear-gradient(rgba(20, 19, 15, 0.25), rgba(20, 19, 15, 0.25)), url('../images/dark_sunset.jpg') !important;
     background-size: cover !important;
@@ -1584,13 +1585,53 @@ body:not(.light-theme).wp-typewriter {
     background-attachment: fixed !important;
 }
 
-body.light-theme,
-body.light-theme[class*="wp-"] {
+body:not(.light-theme).wp-library {
+    background-image: linear-gradient(rgba(20, 19, 15, 0.35), rgba(20, 19, 15, 0.35)), url('../images/cozy_study.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+body:not(.light-theme).wp-cabin {
+    background-image: linear-gradient(rgba(20, 19, 15, 0.35), rgba(20, 19, 15, 0.35)), url('../images/rainy_cabin.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+body:not(.light-theme).wp-cafe {
+    background-image: linear-gradient(rgba(20, 19, 15, 0.35), rgba(20, 19, 15, 0.35)), url('../images/cozy_cafe.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+/* Light theme wallpaper overlays */
+body.light-theme {
     background-image: url('../images/light_shadow.jpg') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-attachment: fixed !important;
+}
+
+body.light-theme.wp-typewriter {
+    background-image: linear-gradient(rgba(245, 243, 236, 0.7), rgba(245, 243, 236, 0.7)), url('../images/dark_sunset.jpg') !important;
+}
+
+body.light-theme.wp-library {
+    background-image: linear-gradient(rgba(245, 243, 236, 0.7), rgba(245, 243, 236, 0.7)), url('../images/cozy_study.jpg') !important;
+}
+
+body.light-theme.wp-cabin {
+    background-image: linear-gradient(rgba(245, 243, 236, 0.7), rgba(245, 243, 236, 0.7)), url('../images/rainy_cabin.jpg') !important;
+}
+
+body.light-theme.wp-cafe {
+    background-image: linear-gradient(rgba(245, 243, 236, 0.7), rgba(245, 243, 236, 0.7)), url('../images/cozy_cafe.jpg') !important;
 }
 
 /* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
