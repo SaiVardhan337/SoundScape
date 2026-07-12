@@ -17,16 +17,34 @@
 }
 
 body.light-theme {
-    --bg-base: #f4f4f5;
-    --bg-card: rgba(255, 255, 255, 0.7);
-    --border-color: rgba(0, 0, 0, 0.08);
-    --text-primary: #1c1917; /* Warm dark stone */
-    --text-secondary: #57534e; /* Warm medium stone */
-    --accent-glow: radial-gradient(circle, rgba(217, 119, 6, 0.08) 0%, rgba(251, 191, 36, 0.04) 50%, transparent 100%);
+    --bg-base: #f5f3ec; /* Warm linen background */
+    --bg-card: #ffffff; /* Solid white cards */
+    --border-color: rgba(77, 106, 69, 0.12); /* Muted olive borders */
+    --text-primary: #2d2c29; /* Dark brown-charcoal primary */
+    --text-secondary: #72706a; /* Warm grey secondary */
+    
+    --color-primary: #4d6a45; /* Muted olive green accent */
+    --color-primary-rgb: 77, 106, 69;
+    
+    --accent-glow: radial-gradient(circle, rgba(77, 106, 69, 0.08) 0%, rgba(77, 106, 69, 0.03) 50%, transparent 100%);
+    --primary-gradient: linear-gradient(135deg, #4d6a45 0%, #3a5033 100%);
+    --btn-hover-gradient: linear-gradient(135deg, #5c8152 0%, #4d6a45 100%);
+}
+
+body.light-theme {
+    background-image: url('../images/leaf_shadow.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 body.light-theme .glass-card {
-    box-shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.08);
+    background: #ffffff !important;
+    border: 1px solid rgba(77, 106, 69, 0.12) !important;
+    box-shadow: 0 8px 24px rgba(77, 106, 69, 0.06) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 body.light-theme .note-preview-area {
@@ -1569,19 +1587,19 @@ body.wp-tokyo {
 
 /* Light theme overlays (blend with frosted white) */
 body.light-theme.wp-typewriter {
-    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/typewriter.png');
+    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/typewriter.png') !important;
 }
 
 body.light-theme.wp-server {
-    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/server.png');
+    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/server.png') !important;
 }
 
 body.light-theme.wp-cabin {
-    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/cabin.png');
+    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/cabin.png') !important;
 }
 
 body.light-theme.wp-tokyo {
-    background: linear-gradient(rgba(243, 244, 246, 0.55), rgba(243, 244, 246, 0.55)), url('../images/tokyo.jpg');
+    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/tokyo.jpg') !important;
 }
 
 /* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
@@ -1711,6 +1729,123 @@ body.light-theme .rt-btn:hover {
     opacity: 0.5;
     cursor: text;
 }
+
+/* LIGHT THEME DESIGN SPECIFICATION OVERRIDES (MOCKUP MATCH) */
+body.light-theme {
+    color: #2d2c29;
+}
+
+body.light-theme .notepad-tab.active {
+    background: transparent !important;
+    color: #4d6a45 !important;
+    border-radius: 0;
+    border-bottom: 2px solid #4d6a45 !important;
+}
+
+body.light-theme .notepad-tab:hover {
+    color: #4d6a45 !important;
+}
+
+body.light-theme .preset-btn {
+    background: #ffffff;
+    border: 1px solid rgba(77, 106, 69, 0.15);
+    color: #72706a;
+}
+
+body.light-theme .preset-btn:hover {
+    background: #fbf9f4;
+    color: #2d2c29;
+}
+
+body.light-theme .preset-btn.active {
+    background: #4d6a45 !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(77, 106, 69, 0.15) !important;
+    border-color: transparent !important;
+}
+
+body.light-theme .switcher-btn {
+    background: transparent;
+    border: none;
+    color: #72706a;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    margin-right: 12px;
+}
+
+body.light-theme .switcher-btn.active {
+    background: transparent !important;
+    color: #4d6a45 !important;
+    border-bottom: 2px solid #4d6a45 !important;
+    box-shadow: none !important;
+}
+
+body.light-theme .switcher-btn:hover {
+    color: #4d6a45 !important;
+    background: transparent !important;
+}
+
+body.light-theme .slider-binaural {
+    background: #e4ede0 !important;
+}
+
+body.light-theme .slider-binaural::-webkit-slider-thumb {
+    background: #4d6a45 !important;
+    box-shadow: 0 0 6px rgba(77, 106, 69, 0.4) !important;
+}
+
+body.light-theme .sound-slider {
+    background: #e4ede0 !important;
+}
+
+body.light-theme .sound-slider::-webkit-slider-thumb {
+    background: #4d6a45 !important;
+}
+
+body.light-theme .toggle-slider {
+    background: #e4ede0 !important;
+}
+
+body.light-theme .toggle-control input:checked + .toggle-slider {
+    background: #4d6a45 !important;
+}
+
+body.light-theme .rt-select {
+    background: #ffffff;
+    border: 1px solid rgba(77, 106, 69, 0.15);
+    color: #2d2c29;
+}
+
+body.light-theme .rt-btn {
+    color: #72706a;
+}
+
+body.light-theme .rt-btn:hover {
+    background: rgba(77, 106, 69, 0.08);
+    color: #4d6a45;
+}
+
+body.light-theme .rt-btn.active {
+    background: #4d6a45 !important;
+    color: white !important;
+}
+
+/* Styled Note Editor sheet of paper in light mode */
+body.light-theme .notepad-body {
+    background: #ffffff;
+    border-top: 1px solid rgba(77, 106, 69, 0.08);
+}
+
+body.light-theme .contenteditable-editor {
+    color: #2d2c29 !important;
+    background: #ffffff !important;
+    padding: 10px !important;
+}
+
+body.light-theme .contenteditable-editor:empty:before {
+    color: #a19f99;
+}
+
 
 
 
