@@ -42,10 +42,11 @@ body:not(.light-theme) {
 }
 
 body.light-theme {
-    /* Custom CSS background representing shadow silhouette on linen wall */
-    background: #f5f3ec !important;
-    background-image: radial-gradient(circle at 50% 50%, #fdfcf9 0%, #f5f3ec 100%),
-                      linear-gradient(135deg, rgba(77, 106, 69, 0.03) 0%, transparent 100%) !important;
+    background-image: url('../images/light_shadow.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 body.light-theme .glass-card {
@@ -1576,15 +1577,20 @@ body[class*="wp-"] .ambient-glow {
 
 /* Dark theme overlays (blend with dark indigo) */
 body:not(.light-theme).wp-typewriter {
-    background-image: radial-gradient(circle at 10% 20%, rgba(35, 33, 27, 0.8) 0%, transparent 50%),
-                      radial-gradient(circle at 90% 80%, rgba(112, 129, 107, 0.12) 0%, transparent 50%) !important;
+    background-image: linear-gradient(rgba(20, 19, 15, 0.25), rgba(20, 19, 15, 0.25)), url('../images/dark_sunset.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 body.light-theme,
 body.light-theme[class*="wp-"] {
-    background: #f5f3ec !important;
-    background-image: radial-gradient(circle at 50% 50%, #fdfcf9 0%, #f5f3ec 100%),
-                      linear-gradient(135deg, rgba(77, 106, 69, 0.03) 0%, transparent 100%) !important;
+    background-image: url('../images/light_shadow.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 /* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
