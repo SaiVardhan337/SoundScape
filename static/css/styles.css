@@ -17,11 +17,11 @@
 }
 
 body.light-theme {
-    --bg-base: #f5f3ec; /* Matte warm cream/linen */
-    --bg-card: #fdfcf9; /* Matte warm-white paper sheets */
+    --bg-base: #e1e8db; /* Light linen sage green background */
+    --bg-card: #edf2e8; /* Soft light greenish-white paper cards */
     --border-color: rgba(77, 106, 69, 0.15); /* Soft olive border */
     --text-primary: #2d2c29; /* Deep charcoal brown */
-    --text-secondary: #7c7a72; /* Warm gray */
+    --text-secondary: #60725a; /* Muted olive gray text */
     
     --color-primary: #4d6a45; /* Muted matte olive green */
     --color-primary-rgb: 77, 106, 69;
@@ -1779,14 +1779,14 @@ body.light-theme .notepad-tab:hover {
 }
 
 body.light-theme .preset-btn {
-    background: #ffffff;
-    border: 1px solid rgba(77, 106, 69, 0.15);
-    color: #72706a;
+    background: var(--bg-card) !important;
+    border: 1px solid rgba(77, 106, 69, 0.15) !important;
+    color: #2d2c29 !important;
 }
 
 body.light-theme .preset-btn:hover {
-    background: #fbf9f4;
-    color: #2d2c29;
+    background: #e1e8db !important;
+    color: #2d2c29 !important;
 }
 
 body.light-theme .preset-btn.active {
@@ -1843,8 +1843,8 @@ body.light-theme .toggle-control input:checked + .toggle-slider {
 }
 
 body.light-theme .rt-select {
-    background: #ffffff;
-    border: 1px solid rgba(77, 106, 69, 0.15);
+    background: var(--bg-card) !important;
+    border: 1px solid rgba(77, 106, 69, 0.15) !important;
     color: #2d2c29;
 }
 
@@ -1864,13 +1864,13 @@ body.light-theme .rt-btn.active {
 
 /* Styled Note Editor sheet of paper in light mode */
 body.light-theme .notepad-body {
-    background: #ffffff;
+    background: var(--bg-card) !important;
     border-top: 1px solid rgba(77, 106, 69, 0.08);
 }
 
 body.light-theme .contenteditable-editor {
     color: #2d2c29 !important;
-    background: #ffffff !important;
+    background: var(--bg-card) !important;
     padding: 10px !important;
 }
 
