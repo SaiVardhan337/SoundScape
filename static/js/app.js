@@ -815,7 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "15") b.classList.add("active");
                 });
-                setWallpaper("tokyo");
+                setWallpaper("typewriter");
             } else if (ws === "writing") {
                 // Set Writing Binaural Beat (6Hz Theta)
                 sound.setBinauralFrequency(6);
@@ -823,7 +823,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "6") b.classList.add("active");
                 });
-                setWallpaper("typewriter");
+                setWallpaper("glow");
             } else if (ws === "pdf") {
                 // Set Reading Binaural Beat (10Hz Alpha)
                 sound.setBinauralFrequency(10);
@@ -831,7 +831,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b.classList.remove("active");
                     if (b.dataset.freq === "10") b.classList.add("active");
                 });
-                setWallpaper("cabin");
+                setWallpaper("glow");
             }
         });
     });

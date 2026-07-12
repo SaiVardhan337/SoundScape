@@ -1,18 +1,18 @@
 :root {
-    --bg-base: #0a0b10;
-    --bg-card: rgba(17, 20, 36, 0.55);
-    --border-color: rgba(255, 255, 255, 0.06);
-    --text-primary: #fafaf9; /* Warm stone white */
-    --text-secondary: #d6d3d1; /* Warm stone secondary */
+    --bg-base: #12120e; /* Warm, dark olive-espresso black */
+    --bg-card: rgba(26, 25, 20, 0.72); /* Warm, dark espresso card sheets */
+    --border-color: rgba(143, 158, 138, 0.12); /* Soft olive-gold borders */
+    --text-primary: #edebe6; /* Warm ivory */
+    --text-secondary: #918f88; /* Warm charcoal gray */
     
-    --color-primary: #d97706; /* Warm rich amber */
-    --color-primary-rgb: 217, 119, 6;
+    --color-primary: #8f9e8a; /* Warm, natural light-green/gold accent */
+    --color-primary-rgb: 143, 158, 138;
     
-    --accent-glow: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.12) 0%, rgba(251, 191, 36, 0.05) 50%, transparent 100%);
-    --primary-gradient: linear-gradient(135deg, var(--color-primary) 0%, #fbbf24 100%);
-    --btn-hover-gradient: linear-gradient(135deg, #fcd34d 0%, #b45309 100%);
+    --accent-glow: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.15) 0%, rgba(143, 158, 138, 0.05) 50%, transparent 100%);
+    --primary-gradient: linear-gradient(135deg, var(--color-primary) 0%, #70816b 100%);
+    --btn-hover-gradient: linear-gradient(135deg, #a4b49f 0%, #8f9e8a 100%);
     
-    --color-success: #10b981;
+    --color-success: #8f9e8a;
     --color-danger: #ef4444;
 }
 
@@ -31,8 +31,16 @@ body.light-theme {
     --btn-hover-gradient: linear-gradient(135deg, #5c8152 0%, #4d6a45 100%);
 }
 
+body:not(.light-theme) {
+    background-image: url('../images/dark_solid.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
 body.light-theme {
-    background-image: url('../images/leaf_shadow.jpg') !important;
+    background-image: url('../images/light_shadow.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -1569,37 +1577,30 @@ body[class*="wp-"] .ambient-glow {
 }
 
 /* Dark theme overlays (blend with dark indigo) */
-body.wp-typewriter {
-    background: linear-gradient(rgba(11, 15, 25, 0.45), rgba(11, 15, 25, 0.45)), url('../images/typewriter.png');
+body:not(.light-theme).wp-glow {
+    background-image: url('../images/dark_solid.png') !important;
 }
 
-body.wp-server {
-    background: linear-gradient(rgba(11, 15, 25, 0.35), rgba(11, 15, 25, 0.35)), url('../images/server.png');
+body:not(.light-theme).wp-server {
+    background-image: url('../images/dark_solid.png') !important;
 }
 
-body.wp-cabin {
-    background: linear-gradient(rgba(11, 15, 25, 0.4), rgba(11, 15, 25, 0.4)), url('../images/cabin.png');
+body:not(.light-theme).wp-typewriter {
+    background-image: url('../images/dark_sunset.png') !important;
 }
 
-body.wp-tokyo {
-    background: linear-gradient(rgba(11, 15, 25, 0.35), rgba(11, 15, 25, 0.35)), url('../images/tokyo.jpg');
+body:not(.light-theme).wp-cabin {
+    background-image: url('../images/dark_sunset.png') !important;
+}
+
+body:not(.light-theme).wp-tokyo {
+    background-image: url('../images/dark_sunset.png') !important;
 }
 
 /* Light theme overlays (blend with frosted white) */
-body.light-theme.wp-typewriter {
-    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/typewriter.png') !important;
-}
-
-body.light-theme.wp-server {
-    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/server.png') !important;
-}
-
-body.light-theme.wp-cabin {
-    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/cabin.png') !important;
-}
-
-body.light-theme.wp-tokyo {
-    background: linear-gradient(rgba(245, 243, 236, 0.65), rgba(245, 243, 236, 0.65)), url('../images/tokyo.jpg') !important;
+body.light-theme,
+body.light-theme[class*="wp-"] {
+    background-image: url('../images/light_shadow.png') !important;
 }
 
 /* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
