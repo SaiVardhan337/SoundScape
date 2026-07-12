@@ -1,14 +1,14 @@
 :root {
-    --bg-base: #12120e; /* Warm, dark olive-espresso black */
-    --bg-card: rgba(26, 25, 20, 0.72); /* Warm, dark espresso card sheets */
-    --border-color: rgba(143, 158, 138, 0.12); /* Soft olive-gold borders */
-    --text-primary: #edebe6; /* Warm ivory */
-    --text-secondary: #918f88; /* Warm charcoal gray */
+    --bg-base: #14130f; /* Matte espresso-black */
+    --bg-card: rgba(28, 26, 21, 0.95); /* Flat solid dark paper sheet */
+    --border-color: rgba(143, 158, 138, 0.1);
+    --text-primary: #edebe6; /* Matte warm ivory */
+    --text-secondary: #8a8880; /* Muted gray-brown */
     
-    --color-primary: #8f9e8a; /* Warm, natural light-green/gold accent */
+    --color-primary: #8f9e8a; /* Warm light-green/gold accent */
     --color-primary-rgb: 143, 158, 138;
     
-    --accent-glow: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.15) 0%, rgba(143, 158, 138, 0.05) 50%, transparent 100%);
+    --accent-glow: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.12) 0%, rgba(var(--color-primary-rgb), 0.02) 60%, transparent 100%);
     --primary-gradient: linear-gradient(135deg, var(--color-primary) 0%, #70816b 100%);
     --btn-hover-gradient: linear-gradient(135deg, #a4b49f 0%, #8f9e8a 100%);
     
@@ -17,34 +17,35 @@
 }
 
 body.light-theme {
-    --bg-base: #f5f3ec; /* Warm linen background */
-    --bg-card: #ffffff; /* Solid white cards */
-    --border-color: rgba(77, 106, 69, 0.12); /* Muted olive borders */
-    --text-primary: #2d2c29; /* Dark brown-charcoal primary */
-    --text-secondary: #72706a; /* Warm grey secondary */
+    --bg-base: #f5f3ec; /* Matte warm cream/linen */
+    --bg-card: #fdfcf9; /* Matte warm-white paper sheets */
+    --border-color: rgba(77, 106, 69, 0.15); /* Soft olive border */
+    --text-primary: #2d2c29; /* Deep charcoal brown */
+    --text-secondary: #7c7a72; /* Warm gray */
     
-    --color-primary: #4d6a45; /* Muted olive green accent */
+    --color-primary: #4d6a45; /* Muted matte olive green */
     --color-primary-rgb: 77, 106, 69;
     
-    --accent-glow: radial-gradient(circle, rgba(77, 106, 69, 0.08) 0%, rgba(77, 106, 69, 0.03) 50%, transparent 100%);
+    --accent-glow: radial-gradient(circle, rgba(77, 106, 69, 0.08) 0%, rgba(77, 106, 69, 0.02) 60%, transparent 100%);
     --primary-gradient: linear-gradient(135deg, #4d6a45 0%, #3a5033 100%);
     --btn-hover-gradient: linear-gradient(135deg, #5c8152 0%, #4d6a45 100%);
 }
 
+body {
+    background: var(--bg-base) !important;
+}
+
 body:not(.light-theme) {
-    background-image: url('../images/dark_solid.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
+    background-image: radial-gradient(circle at 10% 20%, rgba(35, 33, 27, 0.8) 0%, transparent 50%),
+                      radial-gradient(circle at 90% 80%, rgba(112, 129, 107, 0.08) 0%, transparent 50%) !important;
+    background-size: 100% 100% !important;
 }
 
 body.light-theme {
-    background-image: url('../images/light_shadow.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
+    /* Custom CSS background representing shadow silhouette on linen wall */
+    background: #f5f3ec !important;
+    background-image: radial-gradient(circle at 50% 50%, #fdfcf9 0%, #f5f3ec 100%),
+                      linear-gradient(135deg, rgba(77, 106, 69, 0.03) 0%, transparent 100%) !important;
 }
 
 body.light-theme .glass-card {
@@ -148,10 +149,7 @@ body {
 
 .brand-icon {
     font-size: 1.8rem;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 8px rgba(217, 119, 6, 0.4));
+    color: var(--color-primary);
 }
 
 .logo h1 {
@@ -168,18 +166,18 @@ body {
 
 .tagline {
     font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-secondary);
     font-weight: 400;
     margin-top: 2px;
 }
 
 .badge {
     font-size: 0.75rem;
-    background: rgba(217, 119, 6, 0.15);
-    color: #fbbf24;
+    background: rgba(143, 158, 138, 0.1);
+    color: var(--color-primary);
     padding: 3px 8px;
     border-radius: 12px;
-    border: 1px solid rgba(217, 119, 6, 0.2);
+    border: 1px solid rgba(143, 158, 138, 0.2);
     font-weight: 500;
 }
 
@@ -284,7 +282,7 @@ body.flow-mode-active .sound-mixer-panel {
 }
 
 .preset-btn {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: var(--text-secondary);
     padding: 6px 12px;
@@ -299,15 +297,15 @@ body.flow-mode-active .sound-mixer-panel {
 }
 
 .preset-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
     color: var(--text-primary);
 }
 
 .preset-btn.active {
-    background: var(--primary-gradient);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+    background: var(--color-primary) !important;
+    color: #14130f !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
 }
 
 .sliders-container {
@@ -1577,30 +1575,16 @@ body[class*="wp-"] .ambient-glow {
 }
 
 /* Dark theme overlays (blend with dark indigo) */
-body:not(.light-theme).wp-glow {
-    background-image: url('../images/dark_solid.png') !important;
-}
-
-body:not(.light-theme).wp-server {
-    background-image: url('../images/dark_solid.png') !important;
-}
-
 body:not(.light-theme).wp-typewriter {
-    background-image: url('../images/dark_sunset.png') !important;
+    background-image: radial-gradient(circle at 10% 20%, rgba(35, 33, 27, 0.8) 0%, transparent 50%),
+                      radial-gradient(circle at 90% 80%, rgba(112, 129, 107, 0.12) 0%, transparent 50%) !important;
 }
 
-body:not(.light-theme).wp-cabin {
-    background-image: url('../images/dark_sunset.png') !important;
-}
-
-body:not(.light-theme).wp-tokyo {
-    background-image: url('../images/dark_sunset.png') !important;
-}
-
-/* Light theme overlays (blend with frosted white) */
 body.light-theme,
 body.light-theme[class*="wp-"] {
-    background-image: url('../images/light_shadow.png') !important;
+    background: #f5f3ec !important;
+    background-image: radial-gradient(circle at 50% 50%, #fdfcf9 0%, #f5f3ec 100%),
+                      linear-gradient(135deg, rgba(77, 106, 69, 0.03) 0%, transparent 100%) !important;
 }
 
 /* WORKSPACE-SPECIFIC TYPOGRAPHY OVERRIDES ON MAIN UI */
@@ -1846,6 +1830,150 @@ body.light-theme .contenteditable-editor {
 body.light-theme .contenteditable-editor:empty:before {
     color: #a19f99;
 }
+
+/* MOCKUP UI ACCURACY OVERRIDES */
+
+/* 1. Header Navigation styling */
+.main-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 24px;
+    background: transparent;
+}
+
+.workspace-switcher {
+    display: flex;
+    gap: 24px;
+}
+
+.switcher-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 0;
+    border-radius: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    box-shadow: none !important;
+}
+
+.switcher-btn.active {
+    color: var(--color-primary) !important;
+    border-bottom: 2px solid var(--color-primary) !important;
+}
+
+.switcher-btn:hover {
+    color: var(--color-primary) !important;
+}
+
+/* Header Session Action buttons */
+.header-btn {
+    border-radius: 8px !important;
+    font-weight: 500;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+}
+
+.flow-btn {
+    background: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.flow-btn.active {
+    background: var(--color-primary) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+/* 2. Side Panel Container adjustments */
+.panel {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.light-theme .panel {
+    background: #ffffff !important;
+    border-color: rgba(77, 106, 69, 0.08) !important;
+}
+
+/* Sound Sliders & Toggles matching the mockup style */
+.sound-slider {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 2px;
+}
+
+.sound-slider::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--color-primary) !important;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-slider {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.toggle-control input:checked + .toggle-slider {
+    background: var(--color-primary) !important;
+}
+
+/* 3. Center Notepad Card styling matching mockups */
+.notepad-card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.notepad-header {
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 12px 24px;
+}
+
+.notepad-tab {
+    font-size: 0.85rem;
+    padding: 8px 0;
+    border-radius: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    background: transparent !important;
+}
+
+.notepad-tab.active {
+    color: var(--color-primary) !important;
+    border-bottom: 2px solid var(--color-primary) !important;
+}
+
+.rich-toolbar {
+    background: rgba(0, 0, 0, 0.12) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 8px 24px !important;
+}
+
+body.light-theme .rich-toolbar {
+    background: #faf9f6 !important;
+}
+
+/* Editor padding matching the clean mockup sheet of paper */
+.notepad-body {
+    padding: 40px 60px !important;
+}
+
+.contenteditable-editor {
+    min-height: 500px !important;
+    font-size: 1.15rem !important;
+    line-height: 1.8 !important;
+}
+
 
 
 
