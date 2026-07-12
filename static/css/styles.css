@@ -17,11 +17,11 @@
 }
 
 body.light-theme {
-    --bg-base: #e1e8db; /* Light linen sage green background */
-    --bg-card: #edf2e8; /* Soft light greenish-white paper cards */
-    --border-color: rgba(77, 106, 69, 0.15); /* Soft olive border */
+    --bg-base: #eae6db; /* Warm parchment linen background */
+    --bg-card: #f7f4eb; /* Gorgeous warm cream paper sheets */
+    --border-color: rgba(77, 106, 69, 0.12); /* Soft olive border */
     --text-primary: #2d2c29; /* Deep charcoal brown */
-    --text-secondary: #60725a; /* Muted olive gray text */
+    --text-secondary: #787366; /* Muted warm brown-grey */
     
     --color-primary: #4d6a45; /* Muted matte olive green */
     --color-primary-rgb: 77, 106, 69;
@@ -50,7 +50,7 @@ body.light-theme {
 }
 
 body.light-theme .glass-card {
-    background: #ffffff !important;
+    background: var(--bg-card) !important;
     border: 1px solid rgba(77, 106, 69, 0.12) !important;
     box-shadow: 0 8px 24px rgba(77, 106, 69, 0.06) !important;
     backdrop-filter: none !important;
@@ -1818,7 +1818,7 @@ body.light-theme .switcher-btn:hover {
 }
 
 body.light-theme .slider-binaural {
-    background: #e4ede0 !important;
+    background: #e2ded4 !important;
 }
 
 body.light-theme .slider-binaural::-webkit-slider-thumb {
@@ -1827,7 +1827,7 @@ body.light-theme .slider-binaural::-webkit-slider-thumb {
 }
 
 body.light-theme .sound-slider {
-    background: #e4ede0 !important;
+    background: #e2ded4 !important;
 }
 
 body.light-theme .sound-slider::-webkit-slider-thumb {
@@ -1835,7 +1835,7 @@ body.light-theme .sound-slider::-webkit-slider-thumb {
 }
 
 body.light-theme .toggle-slider {
-    background: #e4ede0 !important;
+    background: #e2ded4 !important;
 }
 
 body.light-theme .toggle-control input:checked + .toggle-slider {
