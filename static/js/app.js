@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     editor.addEventListener("input", (e) => {
         saveIndicator.textContent = "Saving...";
         if (typeof updateWordGoalProgress === "function") updateWordGoalProgress();
+        if (typeof trackWordWritten === "function") trackWordWritten();
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             saveWorkspaceNote(editor.innerHTML);
@@ -1041,8 +1042,305 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ==========================================
+    // FOCUS STATS & HEATMAP ENGINE
+    // ==========================================
+    const statsFocusTime = document.getElementById("stats-focus-time");
+    const statsWordsWritten = document.getElementById("stats-words-written");
+    const statsStreak = document.getElementById("stats-streak");
+    const heatmapGrid = document.getElementById("heatmap-grid");
+    const heatmapTooltip = document.getElementById("heatmap-tooltip");
+
+    let initialWordCount = 0;
+    let lastActivityTime = Date.now();
+
+    window.addEventListener("keypress", () => { lastActivityTime = Date.now(); });
+    window.addEventListener("mousemove", () => { lastActivityTime = Date.now(); });
+    window.addEventListener("scroll", () => { lastActivityTime = Date.now(); });
+    window.addEventListener("click", () => { lastActivityTime = Date.now(); });
+
+    function getTodayKey() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function loadStatsData() {
+        const defaultData = {
+            records: {},
+            streak: 0,
+            lastActiveDate: ""
+        };
+        try {
+            const raw = localStorage.getItem("soundscape_focus_stats");
+            return raw ? JSON.parse(raw) : defaultData;
+        } catch (e) {
+            return defaultData;
+        }
+    }
+
+    function saveStatsData(data) {
+        localStorage.setItem("soundscape_focus_stats", JSON.stringify(data));
+    }
+
+    function initFocusStats() {
+        const text = editor.innerText || "";
+        initialWordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+        // Tracks focus minutes: updates every 10 seconds
+        setInterval(() => {
+            const idle = (Date.now() - lastActivityTime) > 60000;
+            if (document.hasFocus() && !idle) {
+                incrementFocusTime(10);
+            }
+        }, 10000);
+
+        renderStats();
+    }
+    window.initFocusStats = initFocusStats;
+
+    function incrementFocusTime(seconds) {
+        const data = loadStatsData();
+        const today = getTodayKey();
+
+        if (!data.records[today]) {
+            data.records[today] = { words: 0, seconds: 0 };
+        }
+        data.records[today].seconds += seconds;
+
+        updateStreak(data, today);
+        saveStatsData(data);
+        renderStats();
+    }
+
+    function trackWordWritten() {
+        const text = editor.innerText || "";
+        const currentCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const diff = currentCount - initialWordCount;
+
+        if (diff > 0) {
+            const data = loadStatsData();
+            const today = getTodayKey();
+
+            if (!data.records[today]) {
+                data.records[today] = { words: 0, seconds: 0 };
+            }
+            data.records[today].words += diff;
+
+            updateStreak(data, today);
+            saveStatsData(data);
+            renderStats();
+        }
+        initialWordCount = currentCount;
+    }
+    window.trackWordWritten = trackWordWritten;
+
+    function updateStreak(data, today) {
+        if (data.lastActiveDate !== today) {
+            if (data.lastActiveDate) {
+                const lastDate = new Date(data.lastActiveDate);
+                const currDate = new Date(today);
+                const diffTime = Math.abs(currDate - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    data.streak += 1;
+                } else if (diffDays > 1) {
+                    data.streak = 1;
+                }
+            } else {
+                data.streak = 1;
+            }
+            data.lastActiveDate = today;
+        }
+    }
+
+    function renderStats() {
+        const data = loadStatsData();
+        const today = getTodayKey();
+        const todayRecord = data.records[today] || { words: 0, seconds: 0 };
+
+        const mins = Math.round(todayRecord.seconds / 60);
+        if (statsFocusTime) statsFocusTime.textContent = `${mins}m`;
+        if (statsWordsWritten) statsWordsWritten.textContent = todayRecord.words;
+        if (statsStreak) statsStreak.textContent = `${data.streak || 0} day${data.streak === 1 ? '' : 's'}`;
+
+        renderHeatmap(data);
+    }
+
+    function renderHeatmap(data) {
+        if (!heatmapGrid) return;
+        heatmapGrid.innerHTML = "";
+
+        const totalDays = 84;
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - totalDays + 1);
+
+        for (let w = 0; w < 12; w++) {
+            const col = document.createElement("div");
+            col.className = "heatmap-column";
+
+            for (let d = 0; d < 7; d++) {
+                const dayOffset = (w * 7) + d;
+                const current = new Date(startDate);
+                current.setDate(startDate.getDate() + dayOffset);
+                
+                const year = current.getFullYear();
+                const month = String(current.getMonth() + 1).padStart(2, '0');
+                const date = String(current.getDate()).padStart(2, '0');
+                const key = `${year}-${month}-${date}`;
+
+                const record = data.records[key] || { words: 0, seconds: 0 };
+                const cell = document.createElement("div");
+                
+                let level = 0;
+                const totalActivity = record.words + Math.round(record.seconds / 6);
+                if (totalActivity > 0) {
+                    if (totalActivity < 50) level = 1;
+                    else if (totalActivity < 200) level = 2;
+                    else if (totalActivity < 500) level = 3;
+                    else level = 4;
+                }
+
+                cell.className = `heatmap-cell level-${level}`;
+
+                const formattedDate = current.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                const recMinutes = Math.round(record.seconds / 60);
+                cell.addEventListener("mouseenter", () => {
+                    if (heatmapTooltip) heatmapTooltip.textContent = `${formattedDate}: ${record.words} words, ${recMinutes}m focus`;
+                });
+                cell.addEventListener("mouseleave", () => {
+                    if (heatmapTooltip) heatmapTooltip.textContent = "Hover for details";
+                });
+
+                col.appendChild(cell);
+            }
+            heatmapGrid.appendChild(col);
+        }
+    }
+
+    // ==========================================
+    // DYNAMIC TIME-OF-DAY SYNC ENGINE
+    // ==========================================
+    const toggleTimeSync = document.getElementById("toggle-time-sync");
+    let timeSyncInterval = null;
+
+    function setThemeMode(isLight) {
+        const hasClass = document.body.classList.contains("light-theme");
+        if (isLight && !hasClass) {
+            document.body.classList.add("light-theme");
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i> Theme';
+            localStorage.setItem("theme", "light");
+            if (aceEditorInstance) {
+                aceEditorInstance.setTheme("ace/theme/chrome");
+                const codeThemeSelect = document.getElementById("code-theme-select");
+                if (codeThemeSelect) codeThemeSelect.value = "chrome";
+            }
+        } else if (!isLight && hasClass) {
+            document.body.classList.remove("light-theme");
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i> Theme';
+            localStorage.setItem("theme", "dark");
+            if (aceEditorInstance) {
+                aceEditorInstance.setTheme("ace/theme/monokai");
+                const codeThemeSelect = document.getElementById("code-theme-select");
+                if (codeThemeSelect) codeThemeSelect.value = "monokai";
+            }
+        }
+    }
+
+    function setMixerVolume(name, val) {
+        const slider = sliders[name];
+        const label = valLabels[name];
+        if (slider) {
+            slider.value = val;
+            if (label) label.textContent = `${val}%`;
+            sound.setVolume(name, val);
+        }
+    }
+
+    function initTimeSync() {
+        if (!toggleTimeSync) return;
+        const isEnabled = localStorage.getItem("soundscape_time_sync") === "true";
+        toggleTimeSync.checked = isEnabled;
+
+        if (isEnabled) {
+            runTimeSyncUpdate(true);
+            startTimeSyncLoop();
+        }
+
+        toggleTimeSync.addEventListener("change", (e) => {
+            const checked = e.target.checked;
+            localStorage.setItem("soundscape_time_sync", checked ? "true" : "false");
+            if (checked) {
+                runTimeSyncUpdate(false);
+                startTimeSyncLoop();
+            } else {
+                stopTimeSyncLoop();
+            }
+        });
+    }
+
+    function startTimeSyncLoop() {
+        if (timeSyncInterval) clearInterval(timeSyncInterval);
+        timeSyncInterval = setInterval(() => {
+            runTimeSyncUpdate(false);
+        }, 60000);
+    }
+
+    function stopTimeSyncLoop() {
+        if (timeSyncInterval) {
+            clearInterval(timeSyncInterval);
+            timeSyncInterval = null;
+        }
+    }
+
+    function runTimeSyncUpdate(firstLoad) {
+        const hour = new Date().getHours();
+        
+        if (hour >= 6 && hour < 12) {
+            // Morning
+            setThemeMode(true);
+            setWallpaper("glow");
+            if (!firstLoad) {
+                setMixerVolume("forest", 30);
+                setMixerVolume("rain", 0);
+            }
+        } else if (hour >= 12 && hour < 17) {
+            // Afternoon
+            setThemeMode(true);
+            setWallpaper("glow");
+            if (!firstLoad) {
+                setMixerVolume("lofi", 25);
+                setMixerVolume("rain", 0);
+                setMixerVolume("forest", 0);
+            }
+        } else if (hour >= 17 && hour < 20) {
+            // Evening
+            setThemeMode(false);
+            setWallpaper("typewriter");
+            if (!firstLoad) {
+                setMixerVolume("lofi", 30);
+                setMixerVolume("forest", 15);
+                setMixerVolume("rain", 0);
+            }
+        } else {
+            // Night
+            setThemeMode(false);
+            setWallpaper("typewriter");
+            if (!firstLoad) {
+                setMixerVolume("rain", 35);
+                setMixerVolume("lofi", 15);
+                setMixerVolume("forest", 0);
+            }
+        }
+    }
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
     loadLofiPlaylist();
+    initFocusStats();
+    initTimeSync();
 });

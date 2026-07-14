@@ -141,6 +141,46 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="panel-section-title">
+                    <span><i class="fa-solid fa-clock"></i> Time-of-Day Sync</span>
+                </div>
+                <div class="toggles-container" style="margin-bottom: 20px;">
+                    <label class="toggle-control full-width">
+                        <input type="checkbox" id="toggle-time-sync">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-name"><i class="fa-solid fa-cloud-sun"></i> Sync with Local Time</span>
+                    </label>
+                </div>
+
+                <div class="panel-section-title">
+                    <span><i class="fa-solid fa-chart-simple"></i> Focus Stats</span>
+                </div>
+                <div class="stats-card-sidebar">
+                    <div class="stats-metrics">
+                        <div class="metric-item">
+                            <span class="metric-label">Focus Today</span>
+                            <span class="metric-value" id="stats-focus-time">0m</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Words Today</span>
+                            <span class="metric-value" id="stats-words-written">0</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Streak</span>
+                            <span class="metric-value" id="stats-streak">0 days</span>
+                        </div>
+                    </div>
+                    <div class="heatmap-container">
+                        <div class="heatmap-header">
+                            <span>Activity Grid (Last 12 Weeks)</span>
+                            <span id="heatmap-tooltip" class="heatmap-tooltip">Hover for details</span>
+                        </div>
+                        <div class="heatmap-grid" id="heatmap-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- CENTER & RIGHT COMBINED WORKSPACE -->
