@@ -2131,6 +2131,126 @@ body.light-theme .heatmap-cell.level-4 { background: #4d6a45; }
     z-index: 10;
 }
 
+/* CUSTOM SOUND MIXER ITEM STYLING */
+.custom-sound-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.delete-custom-sound-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-danger);
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.delete-custom-sound-btn:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+/* OUTLINE MAP DRAWER STYLING */
+.note-outline-drawer {
+    width: 0px;
+    max-width: 0px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.note-outline-drawer.active {
+    width: 250px;
+    max-width: 250px;
+    border-left: 1px solid var(--border-color);
+    padding-left: 15px;
+}
+
+.outline-drawer-header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+}
+
+.outline-drawer-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 480px;
+}
+
+.outline-item {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 6px;
+}
+
+.outline-item:hover {
+    color: var(--color-primary);
+    background: rgba(77, 106, 69, 0.08);
+    transform: translateX(4px);
+}
+
+body:not(.light-theme) .outline-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.outline-item.level-1 {
+    font-weight: 600;
+    font-size: 0.86rem;
+}
+
+.outline-item.level-2 {
+    padding-left: 16px;
+    font-size: 0.80rem;
+}
+
+.outline-item.level-3 {
+    padding-left: 26px;
+    font-size: 0.76rem;
+    opacity: 0.85;
+}
+
+.outline-item.level-4 {
+    padding-left: 36px;
+    font-size: 0.72rem;
+    opacity: 0.75;
+}
+
+.outline-hash {
+    font-size: 0.7rem;
+    opacity: 0.65;
+}
+
+.empty-outline {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0.65;
+    font-style: italic;
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.4;
+}
+
 
 
 

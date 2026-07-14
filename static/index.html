@@ -140,6 +140,17 @@
                             <!-- Additional tracks loaded dynamically -->
                         </select>
                     </div>
+
+                    <div id="custom-sounds-container">
+                        <!-- Custom loops will render here -->
+                    </div>
+
+                    <div class="custom-sound-uploader" style="margin-top: 15px;">
+                        <input type="file" id="custom-sound-file" accept="audio/mp3,audio/wav,audio/ogg,audio/m4a" class="hidden-file-input" style="display: none;">
+                        <button class="preset-btn" style="width: 100%; justify-content: center;" onclick="document.getElementById('custom-sound-file').click()">
+                            <i class="fa-solid fa-plus"></i> Add Custom Sound Loop
+                        </button>
+                    </div>
                 </div>
 
                 <div class="panel-section-title">
@@ -216,6 +227,7 @@
                                     <option value="1000">1000 Words</option>
                                 </select>
                                 <button id="prompt-generator-btn" class="notepad-tab compact-tab-btn" title="Generate Creative Writing Prompt"><i class="fa-solid fa-lightbulb"></i> Prompt</button>
+                                <button id="outline-drawer-btn" class="notepad-tab compact-tab-btn" title="Toggle Outline Map"><i class="fa-solid fa-sitemap"></i> Outline</button>
                             </div>
 
                             <div class="editor-meta">
@@ -296,9 +308,19 @@
                             <button class="rt-btn" id="rt-clear-format" title="Clear Formatting"><i class="fa-solid fa-remove-format"></i></button>
                         </div>
 
-                        <div class="notepad-body">
-                            <div id="note-editor" class="note-textarea contenteditable-editor" contenteditable="true" placeholder="Start typing notes here..."></div>
-                            <div id="note-preview" class="note-preview-area hidden"></div>
+                        <div class="notepad-body" style="display: flex; gap: 20px; overflow: hidden; position: relative;">
+                            <div class="editor-scroll-area" style="flex-grow: 1; overflow-y: auto; height: 100%;">
+                                <div id="note-editor" class="note-textarea contenteditable-editor" contenteditable="true" placeholder="Start typing notes here..."></div>
+                                <div id="note-preview" class="note-preview-area hidden"></div>
+                            </div>
+                            <div id="note-outline-drawer" class="note-outline-drawer collapsed">
+                                <div class="outline-drawer-header">
+                                    <span><i class="fa-solid fa-sitemap"></i> Outline Map</span>
+                                </div>
+                                <div id="outline-drawer-content" class="outline-drawer-content">
+                                    <div class="empty-outline">No headers found. Use # Header syntax or Heading elements.</div>
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>

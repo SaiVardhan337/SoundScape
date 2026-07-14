@@ -125,14 +125,16 @@ class SoundEngine {
 
         const value = percent / 100;
 
-        if (['rain', 'forest', 'lofi'].includes(name)) {
+        if (['rain', 'forest', 'lofi'].includes(name) || name.startsWith('custom_')) {
             const track = this.nodes[name];
-            if (percent > 0 && !track.playing) {
-                track.element.play().catch(e => console.warn(`Autoplay restriction triggered for ${name}`, e));
-                track.playing = true;
-            } else if (percent === 0 && track.playing) {
-                track.element.pause();
-                track.playing = false;
+            if (track) {
+                if (percent > 0 && !track.playing) {
+                    track.element.play().catch(e => console.warn(`Autoplay restriction triggered for ${name}`, e));
+                    track.playing = true;
+                } else if (percent === 0 && track.playing) {
+                    track.element.pause();
+                    track.playing = false;
+                }
             }
         }
 
@@ -204,6 +206,42 @@ class SoundEngine {
             this.gains.master.gain.setTargetAtTime(targetVal, this.ctx.currentTime, 0.1);
         }
         return this.muted;
+    }
+
+    // Dynamically register a custom loop track
+    setupCustomLoopAudio(name, objectUrl) {
+        if (!this.initialized) this.init();
+        
+        // If there's already a track with this name, stop it first
+        if (this.nodes[name]) {
+            this.nodes[name].element.pause();
+        }
+
+        this.gains[name] = this.ctx.createGain();
+        this.gains[name].gain.value = 0.0;
+        this.gains[name].connect(this.filterNode);
+
+        const audio = new Audio();
+        audio.src = objectUrl;
+        audio.loop = true;
+
+        const source = this.ctx.createMediaElementSource(audio);
+        source.connect(this.gains[name]);
+        
+        this.nodes[name] = { element: audio, playing: false };
+    }
+
+    // Delete a custom loop track
+    removeCustomLoopAudio(name) {
+        const track = this.nodes[name];
+        if (track) {
+            track.element.pause();
+            delete this.nodes[name];
+        }
+        if (this.gains[name]) {
+            this.gains[name].disconnect();
+            delete this.gains[name];
+        }
     }
 }
 

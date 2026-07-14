@@ -1337,10 +1337,265 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
+    // INDEXEDDB CUSTOM SOUNDS LOOPS ENGINE
+    // ==========================================
+    let db = null;
+    const dbName = "SoundScapeCustomDB";
+    const storeName = "custom_sounds";
+    const customSoundsContainer = document.getElementById("custom-sounds-container");
+    const customSoundFileInput = document.getElementById("custom-sound-file");
+    const loadedObjectUrls = {};
+
+    function initIndexedDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, 1);
+            request.onerror = (e) => reject(e);
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (e) => {
+                const database = e.target.result;
+                if (!database.objectStoreNames.contains(storeName)) {
+                    database.createObjectStore(storeName, { keyPath: "id" });
+                }
+            };
+        });
+    }
+
+    function saveCustomSoundToDB(name, blob) {
+        return new Promise((resolve, reject) => {
+            const id = "custom_" + Date.now();
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const record = { id, name, blob };
+            const request = store.put(record);
+            request.onsuccess = () => resolve(record);
+            request.onerror = (e) => reject(e);
+        });
+    }
+
+    function getCustomSoundsFromDB() {
+        return new Promise((resolve, reject) => {
+            if (!db) {
+                resolve([]);
+                return;
+            }
+            const transaction = db.transaction([storeName], "readonly");
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e);
+        });
+    }
+
+    function deleteCustomSoundFromDB(id) {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = (e) => reject(e);
+        });
+    }
+
+    function initCustomSounds() {
+        initIndexedDB().then(() => {
+            loadAndRenderCustomSounds();
+        }).catch(err => console.error("Failed to init IndexedDB", err));
+
+        if (customSoundFileInput) {
+            customSoundFileInput.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith("audio/")) {
+                    alert("Please select a valid audio file.");
+                    return;
+                }
+
+                const displayName = file.name.replace(/\.[^/.]+$/, "");
+                
+                saveCustomSoundToDB(displayName, file).then(() => {
+                    loadAndRenderCustomSounds();
+                    customSoundFileInput.value = "";
+                }).catch(err => console.error("Error saving custom sound", err));
+            });
+        }
+    }
+
+    function loadAndRenderCustomSounds() {
+        if (!customSoundsContainer) return;
+        
+        getCustomSoundsFromDB().then(records => {
+            Object.keys(loadedObjectUrls).forEach(id => {
+                URL.revokeObjectURL(loadedObjectUrls[id]);
+                delete loadedObjectUrls[id];
+                sound.removeCustomLoopAudio(id);
+            });
+
+            customSoundsContainer.innerHTML = "";
+
+            if (records.length === 0) return;
+
+            records.forEach(record => {
+                const objectUrl = URL.createObjectURL(record.blob);
+                loadedObjectUrls[record.id] = objectUrl;
+
+                sound.setupCustomLoopAudio(record.id, objectUrl);
+
+                const group = document.createElement("div");
+                group.className = "sound-control-group custom-sound-item";
+                group.id = `group-${record.id}`;
+                group.innerHTML = `
+                    <div class="sound-meta">
+                        <span class="sound-name"><i class="fa-solid fa-file-audio"></i> ${record.name}</span>
+                        <div class="custom-sound-actions">
+                            <span class="volume-val" id="val-${record.id}">0%</span>
+                            <button class="delete-custom-sound-btn" data-id="${record.id}" title="Delete Custom Loop"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <input type="range" id="slider-${record.id}" min="0" max="100" value="0" class="sound-slider">
+                `;
+
+                const slider = group.querySelector(`#slider-${record.id}`);
+                const label = group.querySelector(`#val-${record.id}`);
+                
+                slider.addEventListener("input", (e) => {
+                    const val = e.target.value;
+                    label.textContent = `${val}%`;
+                    sound.setVolume(record.id, val);
+                });
+
+                const deleteBtn = group.querySelector(".delete-custom-sound-btn");
+                deleteBtn.addEventListener("click", () => {
+                    if (confirm(`Remove custom loop "${record.name}"?`)) {
+                        deleteCustomSoundFromDB(record.id).then(() => {
+                            loadAndRenderCustomSounds();
+                        });
+                    }
+                });
+
+                customSoundsContainer.appendChild(group);
+            });
+        });
+    }
+
+    // ==========================================
+    // LIVE OUTLINE / MIND-MAP DRAWER
+    // ==========================================
+    const outlineDrawerBtn = document.getElementById("outline-drawer-btn");
+    const noteOutlineDrawer = document.getElementById("note-outline-drawer");
+    const outlineDrawerContent = document.getElementById("outline-drawer-content");
+
+    function initOutlineMap() {
+        if (!outlineDrawerBtn || !noteOutlineDrawer) return;
+
+        outlineDrawerBtn.addEventListener("click", () => {
+            const isOpen = noteOutlineDrawer.classList.toggle("active");
+            outlineDrawerBtn.classList.toggle("active", isOpen);
+            if (isOpen) {
+                updateOutlineMap();
+            }
+        });
+
+        editor.addEventListener("input", () => {
+            if (noteOutlineDrawer.classList.contains("active")) {
+                updateOutlineMap();
+            }
+        });
+
+        // Hook outline into existing note loads
+        const origLoadWorkspaceNote = window.loadWorkspaceNote;
+        window.loadWorkspaceNote = function() {
+            if (origLoadWorkspaceNote) origLoadWorkspaceNote.apply(this, arguments);
+            if (noteOutlineDrawer && noteOutlineDrawer.classList.contains("active")) {
+                updateOutlineMap();
+            }
+        };
+    }
+
+    function updateOutlineMap() {
+        if (!outlineDrawerContent) return;
+
+        const blocks = Array.from(editor.querySelectorAll("h1, h2, h3, h4, div, p"));
+        outlineDrawerContent.innerHTML = "";
+
+        let headingIndex = 0;
+        
+        window.scrollToHeader = function(index) {
+            const targets = Array.from(editor.querySelectorAll("h1, h2, h3, h4, div, p"));
+            let matchCount = 0;
+            for (let el of targets) {
+                const text = el.innerText.trim();
+                const isHeadingTag = el.tagName.match(/^H[1-4]$/);
+                const isMarkdownHeading = text.startsWith("#");
+
+                if (isHeadingTag || isMarkdownHeading) {
+                    if (matchCount === index) {
+                        el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        
+                        el.style.transition = "background-color 0.5s";
+                        el.style.backgroundColor = "rgba(77, 106, 69, 0.2)";
+                        setTimeout(() => {
+                            el.style.backgroundColor = "";
+                        }, 1200);
+                        break;
+                    }
+                    matchCount++;
+                }
+            }
+        };
+
+        blocks.forEach(el => {
+            const text = el.innerText.trim();
+            const isHeadingTag = el.tagName.match(/^H[1-4]$/);
+            const isMarkdownHeading = text.startsWith("#");
+
+            if (isHeadingTag || isMarkdownHeading) {
+                let level = 1;
+                let displayText = text;
+
+                if (isHeadingTag) {
+                    level = Number(el.tagName.substring(1));
+                } else {
+                    const match = text.match(/^(#{1,4})\s+(.*)$/);
+                    if (match) {
+                        level = match[1].length;
+                        displayText = match[2];
+                    } else {
+                        displayText = text.replace(/^#+/, "").trim();
+                    }
+                }
+
+                if (!displayText) return;
+
+                const item = document.createElement("div");
+                item.className = `outline-item level-${level}`;
+                item.innerHTML = `<i class="fa-solid fa-hashtag outline-hash"></i> <span>${displayText}</span>`;
+                
+                const curIndex = headingIndex;
+                item.addEventListener("click", () => {
+                    window.scrollToHeader(curIndex);
+                });
+
+                outlineDrawerContent.appendChild(item);
+                headingIndex++;
+            }
+        });
+
+        if (headingIndex === 0) {
+            outlineDrawerContent.innerHTML = `<div class="empty-outline">No headers found. Use # Header syntax or Heading elements.</div>`;
+        }
+    }
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
     loadLofiPlaylist();
     initFocusStats();
     initTimeSync();
+    initCustomSounds();
+    initOutlineMap();
 });
