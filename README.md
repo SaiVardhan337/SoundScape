@@ -55,9 +55,5 @@ Launch the local Uvicorn development server:
 uvicorn main:app --reload
 ```
 
-### 4. Access the Dashboard
-Open your browser and navigate to:
-```
-http://127.0.0.1:8000
 ```
 *Your notes and study sessions will be automatically stored in a local SQLite file (`soundscape.db`) inside the project root.*
