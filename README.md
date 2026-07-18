@@ -56,6 +56,4 @@ uvicorn main:app --reload
 ```
   
 
-
-
 *Your notes and study sessions will be automatically stored in a local SQLite file (`soundscape.db`) inside the project root.*
