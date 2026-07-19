@@ -2251,6 +2251,71 @@ body:not(.light-theme) .outline-item:hover {
     line-height: 1.4;
 }
 
+/* DEV MODE: CSS CUSTOMIZER DRAWER STYLING */
+.customizer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    transition: opacity 0.3s ease;
+}
+
+.customizer-drawer {
+    width: 480px;
+    height: 100%;
+    border-radius: 0;
+    border-left: 1px solid var(--border-color);
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    background: var(--bg-card);
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.customizer-help {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.css-sandbox-textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 380px;
+    background: #141619;
+    color: #89ddff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.82rem;
+    padding: 16px;
+    resize: none;
+    line-height: 1.6;
+    outline: none;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.customizer-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.customizer-actions button {
+    flex: 1;
+    justify-content: center;
+}
+
 
 
 

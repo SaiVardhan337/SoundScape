@@ -202,15 +202,18 @@ document.addEventListener("DOMContentLoaded", () => {
             keypressTimestamps.push(Date.now());
         }
         
-        // Play typewriter sound if enabled
+        // Play keyboard sound if enabled
         if (toggleTypewriter && toggleTypewriter.checked) {
             const modifierKeys = ["Shift", "Control", "Alt", "Meta", "CapsLock", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Escape", "Tab"];
             if (modifierKeys.includes(e.key)) return;
             
+            const selectEl = document.getElementById("keyboard-switch-select");
+            const switchType = selectEl ? selectEl.value : "typewriter";
+            
             if (e.key === "Enter") {
-                playTypewriterBell();
+                playKeyboardSound(switchType, true);
             } else {
-                playTypewriterClick();
+                playKeyboardSound(switchType, false);
             }
         }
     });
@@ -683,6 +686,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const switchSelect = document.getElementById("keyboard-switch-select");
+    if (switchSelect) {
+        const cachedSwitch = localStorage.getItem("keyboard_switch_profile") || "typewriter";
+        switchSelect.value = cachedSwitch;
+        switchSelect.addEventListener("change", () => {
+            localStorage.setItem("keyboard_switch_profile", switchSelect.value);
+        });
+    }
+
     function playTypewriterClick() {
         if (!sound.ctx) sound.init();
         const ctx = sound.ctx;
@@ -747,6 +759,175 @@ document.addEventListener("DOMContentLoaded", () => {
         osc2.start();
         osc1.stop(ctx.currentTime + 0.8);
         osc2.stop(ctx.currentTime + 0.8);
+    }
+
+    function playKeyboardSound(switchType, isEnter) {
+        if (!sound.ctx) sound.init();
+        const ctx = sound.ctx;
+        if (!ctx || ctx.state === "suspended") return;
+
+        if (isEnter) {
+            if (switchType === "typewriter") {
+                playTypewriterBell();
+                return;
+            }
+            playSpaceReturnThud(switchType);
+            return;
+        }
+
+        switch (switchType) {
+            case "typewriter":
+                playTypewriterClick();
+                break;
+            case "cherry_blue":
+                playCherryBlueClick();
+                break;
+            case "gateron_brown":
+                playGateronBrownClick();
+                break;
+            case "nk_cream":
+                playNkCreamClick();
+                break;
+            case "raindrops":
+                playRaindropClick();
+                break;
+            default:
+                playTypewriterClick();
+        }
+    }
+
+    function playCherryBlueClick() {
+        const ctx = sound.ctx;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        const gain2 = ctx.createGain();
+
+        // High transient metallic snap
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(3600, ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(1500, ctx.currentTime + 0.003);
+        gain1.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.004);
+
+        // Slider/Stem bottom out
+        osc2.type = "triangle";
+        osc2.frequency.setValueAtTime(260, ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.012);
+        gain2.gain.setValueAtTime(0.07, ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(ctx.currentTime + 0.01);
+        osc2.stop(ctx.currentTime + 0.02);
+    }
+
+    function playGateronBrownClick() {
+        const ctx = sound.ctx;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Soft, round tactile thud
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(210, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(95, ctx.currentTime + 0.018);
+        gain.gain.setValueAtTime(0.09, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.02);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.025);
+    }
+
+    function playNkCreamClick() {
+        const ctx = sound.ctx;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        const gain2 = ctx.createGain();
+
+        // Deep linear creamy clack thud
+        osc1.type = "triangle";
+        osc1.frequency.setValueAtTime(140, ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(65, ctx.currentTime + 0.035);
+        gain1.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+
+        // Housing slap harmonic
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(320, ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.01);
+        gain2.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc1.stop(ctx.currentTime + 0.05);
+        osc2.stop(ctx.currentTime + 0.02);
+    }
+
+    function playRaindropClick() {
+        const ctx = sound.ctx;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Liquid bubble pop sweep
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(1800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.025);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.03);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.035);
+    }
+
+    function playSpaceReturnThud(switchType) {
+        const ctx = sound.ctx;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        let freq = 120;
+        let decay = 0.06;
+        let volume = 0.15;
+
+        if (switchType === "raindrops") {
+            freq = 300;
+            decay = 0.05;
+            volume = 0.08;
+        } else if (switchType === "cherry_blue") {
+            freq = 150;
+            decay = 0.04;
+            volume = 0.12;
+        }
+
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq / 2, ctx.currentTime + decay);
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + decay + 0.01);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + decay + 0.02);
     }
 
     // ==========================================
@@ -1590,6 +1771,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
+    // DEV MODE: CSS CUSTOMIZER ENGINE
+    // ==========================================
+    const cssCustomizerBtn = document.getElementById("css-customizer-btn");
+    const customizerOverlay = document.getElementById("customizer-overlay");
+    const closeCustomizerBtn = document.getElementById("close-customizer-btn");
+    const cssSandboxTextarea = document.getElementById("css-sandbox-textarea");
+    const applyCssBtn = document.getElementById("apply-css-btn");
+    const resetCssBtn = document.getElementById("reset-css-btn");
+
+    function initCssCustomizer() {
+        if (!cssCustomizerBtn || !customizerOverlay || !cssSandboxTextarea) return;
+
+        cssCustomizerBtn.addEventListener("click", () => {
+            customizerOverlay.classList.remove("hidden");
+        });
+
+        closeCustomizerBtn.addEventListener("click", () => {
+            customizerOverlay.classList.add("hidden");
+        });
+
+        customizerOverlay.addEventListener("click", (e) => {
+            if (e.target === customizerOverlay) {
+                customizerOverlay.classList.add("hidden");
+            }
+        });
+
+        applyCssBtn.addEventListener("click", () => {
+            const rawCss = cssSandboxTextarea.value;
+            applyDeveloperStyles(rawCss);
+            localStorage.setItem("custom_developer_css", rawCss);
+            applyCssBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Applied!`;
+            setTimeout(() => {
+                applyCssBtn.innerHTML = `<i class="fa-solid fa-check"></i> Apply CSS`;
+            }, 1500);
+        });
+
+        resetCssBtn.addEventListener("click", () => {
+            if (confirm("Reset layout theme to default styles? All custom developer CSS will be cleared.")) {
+                cssSandboxTextarea.value = "";
+                applyDeveloperStyles("");
+                localStorage.removeItem("custom_developer_css");
+                customizerOverlay.classList.add("hidden");
+            }
+        });
+
+        const savedCss = localStorage.getItem("custom_developer_css");
+        if (savedCss) {
+            cssSandboxTextarea.value = savedCss;
+            applyDeveloperStyles(savedCss);
+        }
+    }
+
+    function applyDeveloperStyles(cssText) {
+        let styleTag = document.getElementById("custom-developer-styles");
+        if (!styleTag) {
+            styleTag = document.createElement("style");
+            styleTag.id = "custom-developer-styles";
+            document.head.appendChild(styleTag);
+        }
+        styleTag.textContent = cssText;
+    }
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
@@ -1598,4 +1842,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initTimeSync();
     initCustomSounds();
     initOutlineMap();
+    initCssCustomizer();
 });

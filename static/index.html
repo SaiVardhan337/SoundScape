@@ -40,6 +40,9 @@
             </div>
 
             <div class="header-actions">
+                <button id="css-customizer-btn" class="header-btn customizer-btn" title="Open CSS Customizer">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Customize CSS
+                </button>
                 <button id="theme-toggle-btn" class="header-btn theme-btn" title="Toggle Theme">
                     <i class="fa-solid fa-moon"></i> Theme
                 </button>
@@ -90,7 +93,17 @@
                     <label class="toggle-control full-width">
                         <input type="checkbox" id="toggle-typewriter">
                         <span class="toggle-slider"></span>
-                        <span class="toggle-name"><i class="fa-solid fa-keyboard"></i> Typewriter Sounds</span>
+                        <span class="toggle-name"><i class="fa-solid fa-keyboard"></i> Keyboard Sounds</span>
+                    </label>
+                    <label class="toggle-control full-width" style="margin-top: 8px;">
+                        <span class="toggle-name" style="flex-grow: 1; font-size: 0.8rem;"><i class="fa-solid fa-circle-nodes"></i> Switch Profile</span>
+                        <select id="keyboard-switch-select" class="track-select compact-select" style="max-width: 130px; font-size: 0.78rem; padding: 3px 6px;">
+                            <option value="typewriter">Typewriter</option>
+                            <option value="cherry_blue">Cherry MX Blue</option>
+                            <option value="gateron_brown">Gateron Brown</option>
+                            <option value="nk_cream">NK Cream</option>
+                            <option value="raindrops">Raindrops</option>
+                        </select>
                     </label>
                 </div>
 
@@ -429,6 +442,35 @@ print("Hello from SoundScape!")</div>
                     </div>
                     <div class="chart-container">
                         <canvas id="focusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE-OVER CSS CUSTOMIZER DRAWER -->
+        <div id="customizer-overlay" class="customizer-overlay hidden">
+            <div class="customizer-drawer glass-card">
+                <div class="drawer-header">
+                    <h3><i class="fa-solid fa-code"></i> Dev Mode: CSS Customizer</h3>
+                    <button id="close-customizer-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="drawer-body" style="display: flex; flex-direction: column; height: calc(100% - 60px);">
+                    <p class="customizer-help">Paste or write custom CSS styles to override the layout, backgrounds, fonts, or colors of your SoundScape environment. Changes persist automatically.</p>
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; min-height: 320px;">
+                        <textarea id="css-sandbox-textarea" class="css-sandbox-textarea" placeholder="/* Example overrides: */
+body.light-theme {
+    --bg-card: #fdf6e3 !important; /* Solarized Warm Light Card */
+}
+body:not(.light-theme) {
+    --bg-card: #073642 !important; /* Solarized Dark Card */
+}
+.main-header {
+    border-bottom: 2px solid var(--color-primary) !important;
+}"></textarea>
+                    </div>
+                    <div class="customizer-actions">
+                        <button id="apply-css-btn" class="preset-btn active"><i class="fa-solid fa-check"></i> Apply CSS</button>
+                        <button id="reset-css-btn" class="preset-btn"><i class="fa-solid fa-trash-can"></i> Reset CSS</button>
                     </div>
                 </div>
             </div>
