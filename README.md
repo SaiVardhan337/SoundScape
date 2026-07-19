@@ -1,7 +1,6 @@
 # SoundScape 🎧🍃
 
 <div align="center">
-  <img src="static/images/light_shadow.jpg" alt="SoundScape Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"/>
   <p><strong>A Next-Generation Ambient Focus Suite, Web Audio Synthesizer, & Productivity Workspace</strong></p>
 
   [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
@@ -71,6 +70,13 @@ soundscape/
 │       └── light_shadow.jpg    # Default leaf shadow wall wallpaper
 └── requirements.txt            # Python dependencies
 ```
+
+---
+
+<div align="center">
+  <h3>🌌 Premium Dark Mode Study Workspace</h3>
+  <img src="static/images/dark_mode_preview.png" alt="SoundScape Dark Mode Workspace" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
+</div>
 
 ---
 
