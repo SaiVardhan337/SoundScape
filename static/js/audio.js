@@ -12,7 +12,6 @@ class SoundEngine {
                 merger: null
             },
             rain: null,
-            forest: null,
             lofi: null
         };
 
@@ -22,13 +21,13 @@ class SoundEngine {
             binaural: null,
             rain: null,
             forest: null,
-            lofi: null
+            lofi: null,
+            chimes: null
         };
 
         // Stream URL mappings (optimized, highly stable CC/royalty-free audio loops)
         this.urls = {
             rain: "audio/rain.mp3",
-            forest: "audio/forest.mp3",
             lofi: "audio/lofi.mp3"
         };
 
@@ -36,6 +35,8 @@ class SoundEngine {
         this.baseCarrierFreq = 200;      // 200Hz base carrier frequency
         this.muted = false;
         this.filterNode = null;
+        this.forestTimeout = null;
+        this.chimesTimeout = null;
     }
 
     init() {
@@ -59,11 +60,14 @@ class SoundEngine {
         // Setup individual mixers (Connect them to the filterNode instead of master)
         this.setupBinauralBeats();
         this.setupLoopAudio('rain');
-        this.setupLoopAudio('forest');
         this.setupLoopAudio('lofi');
+        
+        // Setup generative sounds
+        this.setupGenerativeForest();
+        this.setupGenerativeChimes();
 
         this.initialized = true;
-        console.log("SoundScape Audio Engine initialized. Ambient paths loaded.");
+        console.log("SoundScape Audio Engine initialized. Generative audio loaded.");
     }
 
     // Synthesize Binaural Focus Beats (L/R phase difference)
@@ -125,7 +129,7 @@ class SoundEngine {
 
         const value = percent / 100;
 
-        if (['rain', 'forest', 'lofi'].includes(name) || name.startsWith('custom_')) {
+        if (['rain', 'lofi'].includes(name) || name.startsWith('custom_')) {
             const track = this.nodes[name];
             if (track) {
                 if (percent > 0 && !track.playing) {
@@ -242,6 +246,129 @@ class SoundEngine {
             this.gains[name].disconnect();
             delete this.gains[name];
         }
+    }
+
+    // Setup Generative Forest Birds Synth
+    setupGenerativeForest() {
+        this.gains.forest = this.ctx.createGain();
+        this.gains.forest.gain.value = 0.0;
+        this.gains.forest.connect(this.filterNode);
+        this.startGenerativeForestLoop();
+    }
+
+    // Setup Generative Chimes Synth
+    setupGenerativeChimes() {
+        this.gains.chimes = this.ctx.createGain();
+        this.gains.chimes.gain.value = 0.0;
+        this.gains.chimes.connect(this.filterNode);
+        this.startGenerativeChimesLoop();
+    }
+
+    playProceduralBirdTweet() {
+        if (!this.initialized || this.muted) return;
+        const ctx = this.ctx;
+        if (!ctx || ctx.state === 'suspended') return;
+
+        const gainVal = this.gains.forest ? this.gains.forest.gain.value : 0;
+        if (gainVal <= 0.01) return;
+
+        const chirps = Math.floor(Math.random() * 3) + 1;
+        let timeOffset = 0;
+
+        for (let i = 0; i < chirps; i++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+
+            const startFreq = 2600 + Math.random() * 700;
+            const endFreq = 3900 + Math.random() * 900;
+            const duration = 0.07 + Math.random() * 0.05;
+
+            osc.frequency.setValueAtTime(startFreq, ctx.currentTime + timeOffset);
+            osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + timeOffset + duration);
+
+            gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
+            gain.gain.linearRampToValueAtTime(gainVal * 0.12, ctx.currentTime + timeOffset + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + timeOffset + duration);
+
+            osc.connect(gain);
+            gain.connect(this.filterNode);
+
+            osc.start(ctx.currentTime + timeOffset);
+            osc.stop(ctx.currentTime + timeOffset + duration + 0.01);
+
+            timeOffset += duration + 0.05 + Math.random() * 0.05;
+        }
+    }
+
+    startGenerativeForestLoop() {
+        const scheduleNext = () => {
+            const nextDelay = 3000 + Math.random() * 7000;
+            this.forestTimeout = setTimeout(() => {
+                this.playProceduralBirdTweet();
+                scheduleNext();
+            }, nextDelay);
+        };
+        scheduleNext();
+    }
+
+    playWindChimes() {
+        if (!this.initialized || this.muted) return;
+        const ctx = this.ctx;
+        if (!ctx || ctx.state === 'suspended') return;
+
+        const gainVal = this.gains.chimes ? this.gains.chimes.gain.value : 0;
+        if (gainVal <= 0.01) return;
+
+        const chimesCount = 3 + Math.floor(Math.random() * 3);
+        const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 987.77, 1174.66, 1318.51];
+        
+        let delay = 0;
+        for (let i = 0; i < chimesCount; i++) {
+            const baseFreq = scale[Math.floor(Math.random() * scale.length)];
+            this.triggerChimeRod(baseFreq, gainVal, ctx.currentTime + delay);
+            delay += 0.15 + Math.random() * 0.25;
+        }
+    }
+
+    triggerChimeRod(baseFreq, volume, time) {
+        const ctx = this.ctx;
+        const partials = [1.0, 2.76, 5.40, 8.93];
+        const ampGains = [1.0, 0.45, 0.25, 0.10];
+        const decayTime = 1.6 + Math.random() * 1.6;
+
+        const chimeGain = ctx.createGain();
+        chimeGain.gain.setValueAtTime(0, time);
+        chimeGain.gain.linearRampToValueAtTime(volume * 0.15, time + 0.005);
+        chimeGain.gain.exponentialRampToValueAtTime(0.0001, time + decayTime);
+        chimeGain.connect(this.filterNode);
+
+        partials.forEach((multiplier, index) => {
+            const osc = ctx.createOscillator();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(baseFreq * multiplier, time);
+
+            const partialGain = ctx.createGain();
+            partialGain.gain.setValueAtTime(ampGains[index], time);
+            partialGain.gain.exponentialRampToValueAtTime(0.0001, time + (decayTime / multiplier));
+
+            osc.connect(partialGain);
+            partialGain.connect(chimeGain);
+
+            osc.start(time);
+            osc.stop(time + decayTime + 0.05);
+        });
+    }
+
+    startGenerativeChimesLoop() {
+        const scheduleNext = () => {
+            const nextDelay = 7000 + Math.random() * 11000;
+            this.chimesTimeout = setTimeout(() => {
+                this.playWindChimes();
+                scheduleNext();
+            }, nextDelay);
+        };
+        scheduleNext();
     }
 }
 

@@ -154,6 +154,14 @@
                         </select>
                     </div>
 
+                    <div class="sound-control-group">
+                        <div class="sound-meta">
+                            <span class="sound-name"><i class="fa-solid fa-wind"></i> Wind Chimes (Generative)</span>
+                            <span class="volume-val" id="val-chimes">0%</span>
+                        </div>
+                        <input type="range" id="slider-chimes" min="0" max="100" value="0" class="sound-slider">
+                    </div>
+
                     <div id="custom-sounds-container">
                         <!-- Custom loops will render here -->
                     </div>
@@ -203,6 +211,54 @@
                         <div class="heatmap-grid" id="heatmap-grid">
                             <!-- Populated dynamically via JS -->
                         </div>
+                    </div>
+                </div>
+
+                <div class="panel-section-title" style="margin-top: 20px;">
+                    <span><i class="fa-solid fa-gamepad"></i> Focus Quest RPG</span>
+                </div>
+                <div class="stats-card-sidebar focus-rpg-card">
+                    <div class="rpg-gameplay-area">
+                        <div class="rpg-stage">
+                            <div class="rpg-sprite-container hero-container" id="rpg-hero">
+                                <svg class="rpg-sprite" viewBox="0 0 100 100">
+                                    <!-- A premium, cute, clean SVG knight -->
+                                    <circle cx="50" cy="45" r="16" fill="#8f9e8a" stroke="#4d6a45" stroke-width="2"/> <!-- Helmet -->
+                                    <rect x="42" y="38" width="16" height="4" fill="#2d2c29"/> <!-- Visor -->
+                                    <rect x="48" y="60" width="4" height="15" fill="#a0825b"/> <!-- Leg Left -->
+                                    <rect x="58" y="60" width="4" height="15" fill="#a0825b"/> <!-- Leg Right -->
+                                    <rect x="36" y="55" width="28" height="15" fill="#60725a" rx="4"/> <!-- Armor Body -->
+                                    <!-- Sword -->
+                                    <g id="rpg-sword">
+                                        <rect x="24" y="25" width="4" height="30" fill="#dedacb" stroke="#787366" stroke-width="1.5" rx="1"/> <!-- Blade -->
+                                        <rect x="20" y="52" width="12" height="3" fill="#a0825b"/> <!-- Guard -->
+                                        <rect x="25" y="55" width="2" height="6" fill="#787366"/> <!-- Hilt -->
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="rpg-sprite-container monster-container" id="rpg-monster">
+                                <svg class="rpg-sprite" viewBox="0 0 100 100">
+                                    <!-- Cute blob slime -->
+                                    <path d="M 25 70 Q 25 35 50 35 Q 75 35 75 70 Z" fill="#ef4444" opacity="0.8" stroke="#b91c1c" stroke-width="2"/> <!-- Body -->
+                                    <circle cx="42" cy="55" r="3" fill="#fff"/> <!-- Eye L -->
+                                    <circle cx="58" cy="55" r="3" fill="#fff"/> <!-- Eye R -->
+                                    <path d="M 46 64 Q 50 67 54 64" stroke="#fff" fill="none" stroke-width="2"/> <!-- Smile -->
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rpg-stats">
+                        <div class="rpg-stats-row">
+                            <span class="rpg-stat-label">Lv.<span id="rpg-level">1</span> Hero</span>
+                            <span class="rpg-stat-label"><i class="fa-solid fa-coins" style="color: #f59e0b;"></i> <span id="rpg-gold">0</span>g</span>
+                        </div>
+                        <div class="rpg-xp-bar-container">
+                            <div class="rpg-xp-bar" id="rpg-xp-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="rpg-xp-text" id="rpg-xp-text">0 / 100 XP</div>
+                    </div>
+                    <div class="rpg-log" id="rpg-log">
+                        <div class="rpg-log-entry">[System] Quest loaded. Write or focus to earn XP!</div>
                     </div>
                 </div>
             </section>

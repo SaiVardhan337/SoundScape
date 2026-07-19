@@ -261,14 +261,16 @@ document.addEventListener("DOMContentLoaded", () => {
         binaural: document.getElementById("slider-binaural"),
         rain: document.getElementById("slider-rain"),
         forest: document.getElementById("slider-forest"),
-        lofi: document.getElementById("slider-lofi")
+        lofi: document.getElementById("slider-lofi"),
+        chimes: document.getElementById("slider-chimes")
     };
 
     const valLabels = {
         binaural: document.getElementById("val-binaural"),
         rain: document.getElementById("val-rain"),
         forest: document.getElementById("val-forest"),
-        lofi: document.getElementById("val-lofi")
+        lofi: document.getElementById("val-lofi"),
+        chimes: document.getElementById("val-chimes")
     };
 
     // Update sound managers and volume labels dynamically
@@ -1293,6 +1295,11 @@ document.addEventListener("DOMContentLoaded", () => {
         updateStreak(data, today);
         saveStatsData(data);
         renderStats();
+
+        // Focus RPG XP Reward: 5 XP, 3 Gold per 10s
+        if (typeof gainRpgXp === "function") {
+            gainRpgXp(5, 3);
+        }
     }
 
     function trackWordWritten() {
@@ -1312,6 +1319,11 @@ document.addEventListener("DOMContentLoaded", () => {
             updateStreak(data, today);
             saveStatsData(data);
             renderStats();
+
+            // Focus RPG XP Reward: 1 XP, 1 Gold per word written
+            if (typeof gainRpgXp === "function") {
+                gainRpgXp(diff, diff);
+            }
         }
         initialWordCount = currentCount;
     }
@@ -1834,6 +1846,173 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
+    // FOCUS QUEST RPG ENGINE
+    // ==========================================
+    const rpgLevel = document.getElementById("rpg-level");
+    const rpgGold = document.getElementById("rpg-gold");
+    const rpgXpBar = document.getElementById("rpg-xp-bar");
+    const rpgXpText = document.getElementById("rpg-xp-text");
+    const rpgLog = document.getElementById("rpg-log");
+    const rpgHero = document.getElementById("rpg-hero");
+    const rpgMonster = document.getElementById("rpg-monster");
+    const rpgSword = document.getElementById("rpg-sword");
+
+    let rpgData = {
+        level: 1,
+        xp: 0,
+        gold: 0,
+        logs: ["[System] Quest loaded. Write or focus to earn XP!"]
+    };
+
+    function loadRpgData() {
+        try {
+            const raw = localStorage.getItem("soundscape_focus_rpg");
+            if (raw) rpgData = JSON.parse(raw);
+        } catch (e) {
+            console.error("Failed to load RPG data", e);
+        }
+    }
+
+    function saveRpgData() {
+        localStorage.setItem("soundscape_focus_rpg", JSON.stringify(rpgData));
+    }
+
+    function addRpgLog(message) {
+        if (!rpgLog) return;
+        rpgData.logs.push(message);
+        if (rpgData.logs.length > 20) rpgData.logs.shift();
+
+        const entry = document.createElement("div");
+        entry.className = "rpg-log-entry";
+        entry.textContent = message;
+        rpgLog.appendChild(entry);
+        rpgLog.scrollTop = rpgLog.scrollHeight;
+    }
+
+    function initFocusRpg() {
+        loadRpgData();
+        
+        if (rpgLevel) rpgLevel.textContent = rpgData.level;
+        if (rpgGold) rpgGold.textContent = rpgData.gold;
+        updateRpgXpBar();
+
+        if (rpgLog) {
+            rpgLog.innerHTML = "";
+            rpgData.logs.forEach(log => {
+                const entry = document.createElement("div");
+                entry.className = "rpg-log-entry";
+                entry.textContent = log;
+                rpgLog.appendChild(entry);
+            });
+            rpgLog.scrollTop = rpgLog.scrollHeight;
+        }
+
+        triggerHeroAction("walk", 3000);
+    }
+
+    function updateRpgXpBar() {
+        const maxXp = rpgData.level * 100;
+        const pct = Math.min((rpgData.xp / maxXp) * 100, 100);
+        if (rpgXpBar) rpgXpBar.style.width = `${pct}%`;
+        if (rpgXpText) rpgXpText.textContent = `${rpgData.xp} / ${maxXp} XP`;
+    }
+
+    function triggerHeroAction(actionClass, duration) {
+        if (!rpgHero) return;
+        rpgHero.classList.remove("walk", "attack");
+        void rpgHero.offsetWidth;
+        rpgHero.classList.add(actionClass);
+        if (duration) {
+            setTimeout(() => {
+                rpgHero.classList.remove(actionClass);
+            }, duration);
+        }
+    }
+
+    let battleCooldown = 0;
+    function gainRpgXp(amount, goldAmount) {
+        rpgData.xp += amount;
+        rpgData.gold += goldAmount;
+        if (rpgGold) rpgGold.textContent = rpgData.gold;
+
+        triggerHeroAction("walk", 2000);
+
+        const maxXp = rpgData.level * 100;
+        if (rpgData.xp >= maxXp) {
+            rpgData.xp -= maxXp;
+            rpgData.level += 1;
+            if (rpgLevel) rpgLevel.textContent = rpgData.level;
+            addRpgLog(`[System] Level Up! You reached Level ${rpgData.level}! 🎉`);
+            if (rpgHero) {
+                rpgHero.style.filter = "drop-shadow(0 0 8px var(--color-primary))";
+                setTimeout(() => { rpgHero.style.filter = ""; }, 1500);
+            }
+        }
+
+        updateRpgXpBar();
+        saveRpgData();
+
+        battleCooldown += amount;
+        if (battleCooldown >= 40) {
+            battleCooldown = 0;
+            setTimeout(triggerRpgBattle, 1200);
+        }
+    }
+    window.gainRpgXp = gainRpgXp;
+
+    function triggerRpgBattle() {
+        if (!rpgMonster || !rpgHero) return;
+        
+        const monsters = ["Syntax Bug", "Distraction Slime", "Typo Imp", "Blocker Beast"];
+        const monsterName = monsters[Math.floor(Math.random() * monsters.length)];
+
+        addRpgLog(`[Battle] A wild "${monsterName}" appeared!`);
+        
+        rpgMonster.style.opacity = "1";
+        rpgMonster.style.transform = "translateX(0)";
+
+        setTimeout(() => {
+            triggerHeroAction("attack", 300);
+            
+            if (rpgSword) {
+                rpgSword.style.transform = "rotate(-65deg)";
+                setTimeout(() => { rpgSword.style.transform = ""; }, 300);
+            }
+
+            setTimeout(() => {
+                rpgMonster.classList.add("hit");
+                if (typeof playSpaceReturnThud === "function") {
+                    playSpaceReturnThud("cherry_blue");
+                }
+                
+                setTimeout(() => {
+                    rpgMonster.classList.remove("hit");
+                    rpgMonster.style.opacity = "0";
+                    rpgMonster.style.transform = "translateX(30px)";
+                    
+                    const bonusXp = 15;
+                    const bonusGold = 8;
+                    addRpgLog(`[Battle] Slain "${monsterName}"! (+${bonusXp} XP, +${bonusGold} Gold)`);
+                    
+                    rpgData.xp += bonusXp;
+                    rpgData.gold += bonusGold;
+                    if (rpgGold) rpgGold.textContent = rpgData.gold;
+                    
+                    const maxXp = rpgData.level * 100;
+                    if (rpgData.xp >= maxXp) {
+                        rpgData.xp -= maxXp;
+                        rpgData.level += 1;
+                        if (rpgLevel) rpgLevel.textContent = rpgData.level;
+                        addRpgLog(`[System] Level Up! You reached Level ${rpgData.level}! 🎉`);
+                    }
+                    updateRpgXpBar();
+                    saveRpgData();
+                }, 300);
+            }, 150);
+        }, 1000);
+    }
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
@@ -1843,4 +2022,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initCustomSounds();
     initOutlineMap();
     initCssCustomizer();
+    initFocusRpg();
 });
