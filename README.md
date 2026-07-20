@@ -3,10 +3,11 @@
 <div align="center">
   <p><strong>A Next-Generation Ambient Focus Suite, Web Audio Synthesizer, & Productivity Workspace</strong></p>
 
+  [![CI](https://github.com/SaiVardhan337/SoundScape/actions/workflows/ci.yml/badge.svg)](https://github.com/SaiVardhan337/SoundScape/actions/workflows/ci.yml)
   [![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
   [![Web Audio API](https://img.shields.io/badge/Audio-Web%20Audio%20API-orange?style=for-the-badge&logo=web-audio-api)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
   [![Python FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 </div>
 
 ---
@@ -20,7 +21,7 @@ SoundScape is a premium, offline-first productivity workspace combining mathemat
 ### 1. 🎛️ Physical Audio Synthesis & Soundboards
 *   **Generative Wind Chimes:** Procedurally models clamped metal tube resonances using Web Audio oscillators. Features fundamental pitches in a pentatonic scale and inharmonic overtones (`1.0`, `2.76`, `5.40`, `8.93`) with natural ring-outs.
 *   **Procedural Bird Chirps:** Synthesizes random forest tweets on-the-fly using exponential frequency sweeps (`2600Hz` to `3900Hz`) to create organic, non-repeating nature soundscapes.
-*   **Binaural beats:** Mathematical carrier wave sweeps for Delta, Theta, Alpha, and Beta brainwave states to stimulate focus, active calculation, or deep sleep.
+*   **Binaural Beats:** Mathematical carrier wave sweeps for Delta, Theta, Alpha, and Beta brainwave states to stimulate focus, active calculation, or deep sleep.
 *   **IndexedDB Loop Uploader:** Drag and drop custom `.mp3` or `.wav` ambient files. Saved locally to browser IndexedDB memory to create infinite personal mixing desks.
 
 ### ⌨️ 2. Web Audio Mechanical Keyboard Engine
@@ -50,40 +51,52 @@ An automated environmental scheduler synced to your local clock:
 
 ---
 
+<div align="center">
+  <h3>🌌 Premium Dark Mode Study Workspace</h3>
+  <img src="static/images/dark_mode_preview.png?v=2" alt="SoundScape Dark Mode Workspace" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
+</div>
+
+---
+
 ## 📂 Repository File Structure
 
 ```
 soundscape/
-├── main.py                     # FastAPI application endpoints
-├── database.py                 # SQLite database config and connection mapping
-├── models.py                   # SQLAlchemy note & session schemas
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # GitHub Actions CI workflow
+├── api/
+│   ├── index.py               # FastAPI application endpoints
+│   ├── database.py            # SQLite database config and connection mapping
+│   └── models.py              # SQLAlchemy note & session schemas
+├── examples/
+│   ├── quickstart.py          # Programmatic API client example
+│   └── README.md              # Examples usage guide
 ├── static/
-│   ├── index.html              # Layout structure, SVG sprite assets, drawers
+│   ├── index.html             # Dashboard structure, SVG sprite assets, drawers
 │   ├── css/
-│   │   └── styles.css          # Creamsepia overrides, customizer variables, keyframes
+│   │   └── styles.css         # Theme styles, customizer variables, keyframes
 │   ├── js/
-│   │   ├── audio.js            # Web Audio synthesizers, partial formulas, frequency sweeps
-│   │   ├── stats.js            # Chart.js weekly summary metrics
-│   │   └── app.js              # RPG logs, outline parser, IndexedDB uploader
+│   │   ├── audio.js           # Web Audio synthesizers & routing
+│   │   ├── stats.js           # Chart.js weekly summary metrics
+│   │   └── app.js             # RPG engine, outline parser, IndexedDB uploader
 │   └── images/
-│       ├── cozy_cafe.jpg       # Neon-free ambient cafe study corner
-│       └── light_shadow.jpg    # Default leaf shadow wall wallpaper
-└── requirements.txt            # Python dependencies
+│       └── dark_mode_preview.png # Live dark mode workspace screenshot
+├── tests/
+│   └── test_api.py            # Pytest test suite for REST API endpoints
+├── CONTRIBUTING.md            # Guidelines for community contributors
+├── LICENSE                    # MIT License
+├── main.py                    # Application entry point
+├── requirements.txt           # Python backend dependencies
+└── vercel.json                # Vercel deployment routing config
 ```
-
----
-
-<div align="center">
-  <h3>🌌 Premium Dark Mode Study Workspace</h3>
-  <img src="static/images/dark_mode_preview.png" alt="SoundScape Dark Mode Workspace" width="100%" style="border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);"/>
-</div>
 
 ---
 
 ## ⚡ Quick Start
 
 ### 1. Installation
-Clone the repository and install backend modules:
+Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/SaiVardhan337/SoundScape.git
 cd SoundScape
@@ -93,6 +106,10 @@ pip install -r requirements.txt
 ### 2. Start Local Server
 Launch the development engine:
 ```bash
+python main.py
+```
+Or with Uvicorn directly:
+```bash
 uvicorn main:app --reload
 ```
 Navigate to **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser.
@@ -101,6 +118,22 @@ Navigate to **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser.
 
 ---
 
-## 🤝 Contributing & Pull Requests
-SoundScape is open source! Feel free to copy-paste custom CSS styles in our CSS Customizer drawer, build custom themes, or submit pull requests to add new synthesizer waveforms. If you love the project, please leave a star! ⭐
+## 🧪 Testing & Examples
 
+Run the unit test suite:
+```bash
+pytest
+```
+
+Run the API quickstart example script:
+```bash
+python examples/quickstart.py
+```
+
+---
+
+## 🤝 Contributing & Pull Requests
+SoundScape is open source! Please review our [CONTRIBUTING.md](CONTRIBUTING.md) guide for guidelines, good first issues, and development setup. If you love the project, please leave a star! ⭐
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).

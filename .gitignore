@@ -7,11 +7,14 @@
 *.db
 soundscape.db
 
-# Python cache
+# Python cache & tests
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache/
+.coverage
+htmlcov/
 .Python
 build/
 develop-eggs/

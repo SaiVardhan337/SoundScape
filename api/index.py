@@ -43,7 +43,7 @@ def update_note(payload: Dict[str, str], db: Session = Depends(get_db)):
         db.add(note)
     else:
         note.content = content
-        note.updated_at = datetime.datetime.utcnow()
+        note.updated_at = datetime.datetime.now(datetime.timezone.utc)
     db.commit()
     db.refresh(note)
     return {"status": "success", "updated_at": note.updated_at}
