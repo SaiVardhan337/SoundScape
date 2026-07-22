@@ -35,6 +35,7 @@ class SoundEngine {
         this.baseCarrierFreq = 200;      // 200Hz base carrier frequency
         this.muted = false;
         this.filterNode = null;
+        this.analyser = null;
         this.forestTimeout = null;
         this.chimesTimeout = null;
     }
@@ -51,11 +52,16 @@ class SoundEngine {
         this.gains.master.gain.value = 1.0;
         this.gains.master.connect(this.ctx.destination);
 
+        // Create Analyser Node for visualizer
+        this.analyser = this.ctx.createAnalyser();
+        this.analyser.fftSize = 128;
+        this.analyser.connect(this.gains.master);
+
         // Create Lowpass Filter Node (Flow Filter)
         this.filterNode = this.ctx.createBiquadFilter();
         this.filterNode.type = "lowpass";
         this.filterNode.frequency.setValueAtTime(20000, this.ctx.currentTime); // Fully open initially
-        this.filterNode.connect(this.gains.master);
+        this.filterNode.connect(this.analyser);
 
         // Setup individual mixers (Connect them to the filterNode instead of master)
         this.setupBinauralBeats();
@@ -67,7 +73,7 @@ class SoundEngine {
         this.setupGenerativeChimes();
 
         this.initialized = true;
-        console.log("SoundScape Audio Engine initialized. Generative audio loaded.");
+        console.log("SoundScape Audio Engine initialized. Generative audio & analyser loaded.");
     }
 
     // Synthesize Binaural Focus Beats (L/R phase difference)

@@ -724,10 +724,10 @@ document.addEventListener("DOMContentLoaded", () => {
         gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.02);
 
         osc1.connect(gain1);
-        gain1.connect(ctx.destination);
+        gain1.connect(sound.analyser || ctx.destination);
         
         osc2.connect(gain2);
-        gain2.connect(ctx.destination);
+        gain2.connect(sound.analyser || ctx.destination);
 
         osc1.start();
         osc2.start();
@@ -755,7 +755,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         osc1.connect(gainNode);
         osc2.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        gainNode.connect(sound.analyser || ctx.destination);
 
         osc1.start();
         osc2.start();
@@ -820,9 +820,9 @@ document.addEventListener("DOMContentLoaded", () => {
         gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
 
         osc1.connect(gain1);
-        gain1.connect(ctx.destination);
+        gain1.connect(sound.analyser || ctx.destination);
         osc2.connect(gain2);
-        gain2.connect(ctx.destination);
+        gain2.connect(sound.analyser || ctx.destination);
 
         osc1.start();
         osc2.start();
@@ -843,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.02);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(sound.analyser || ctx.destination);
 
         osc.start();
         osc.stop(ctx.currentTime + 0.025);
@@ -871,9 +871,9 @@ document.addEventListener("DOMContentLoaded", () => {
         gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
 
         osc1.connect(gain1);
-        gain1.connect(ctx.destination);
+        gain1.connect(sound.analyser || ctx.destination);
         osc2.connect(gain2);
-        gain2.connect(ctx.destination);
+        gain2.connect(sound.analyser || ctx.destination);
 
         osc1.start();
         osc2.start();
@@ -894,7 +894,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.03);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(sound.analyser || ctx.destination);
 
         osc.start();
         osc.stop(ctx.currentTime + 0.035);
@@ -926,7 +926,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + decay + 0.01);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(sound.analyser || ctx.destination);
 
         osc.start();
         osc.stop(ctx.currentTime + decay + 0.02);
@@ -2013,6 +2013,113 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
+    // AMBIENT GLOW WAVE VISUALIZER
+    // ==========================================
+    function initAmbientVisualizer() {
+        const canvas = document.getElementById("ambient-visualizer");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        let dataArray = null;
+        let bufferLength = 0;
+
+        let particles = [];
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 4 + 1,
+                speedX: Math.random() * 0.4 - 0.2,
+                speedY: Math.random() * 0.4 - 0.2,
+                alpha: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        let animationFrameId;
+        function draw() {
+            animationFrameId = requestAnimationFrame(draw);
+
+            const isLightTheme = document.body.classList.contains("light-theme");
+            
+            // Background clear with slight trail
+            ctx.fillStyle = isLightTheme ? "rgba(234, 230, 219, 0.08)" : "rgba(20, 22, 25, 0.08)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let energy = 0;
+            if (sound.initialized && sound.analyser) {
+                if (!dataArray) {
+                    bufferLength = sound.analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+                }
+                sound.analyser.getByteFrequencyData(dataArray);
+
+                // calculate average low-mid energy for pulse effects
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                energy = sum / bufferLength;
+            }
+
+            // Draw glowing flowing sine waves at the bottom
+            const waveCount = 3;
+            const colorsDark = ["rgba(77, 106, 69, 0.12)", "rgba(160, 130, 91, 0.08)", "rgba(96, 114, 90, 0.06)"];
+            const colorsLight = ["rgba(77, 106, 69, 0.08)", "rgba(160, 130, 91, 0.05)", "rgba(226, 222, 212, 0.07)"];
+            const colors = isLightTheme ? colorsLight : colorsDark;
+
+            for (let w = 0; w < waveCount; w++) {
+                ctx.beginPath();
+                ctx.strokeStyle = colors[w];
+                ctx.lineWidth = 2 + w * 2 + (energy * 0.05);
+                ctx.shadowBlur = 10 + (energy * 0.2);
+                ctx.shadowColor = isLightTheme ? "rgba(77, 106, 69, 0.2)" : "rgba(77, 106, 69, 0.6)";
+
+                const time = Date.now() * 0.0008 + w * 50;
+                const amplitude = 30 + w * 15 + (energy * 0.6);
+                const frequency = 0.002 + w * 0.001;
+
+                for (let x = 0; x < canvas.width; x += 10) {
+                    const y = canvas.height * 0.8 + Math.sin(x * frequency + time) * amplitude * Math.sin(x / canvas.width * Math.PI);
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0; // reset shadow
+
+            // Animate and draw particles reacting to sound energy
+            particles.forEach(p => {
+                p.x += p.speedX * (1 + energy * 0.04);
+                p.y += p.speedY * (1 + energy * 0.04);
+
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                const finalRadius = p.radius * (1 + energy * 0.03);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, finalRadius, 0, Math.PI * 2);
+                ctx.fillStyle = isLightTheme 
+                    ? `rgba(77, 106, 69, ${p.alpha * (0.6 + energy * 0.01)})`
+                    : `rgba(160, 130, 91, ${p.alpha * (0.4 + energy * 0.015)})`;
+                ctx.fill();
+            });
+        }
+        draw();
+    }
+
+    // ==========================================
     // INITIALIZATION RUNNER
     // ==========================================
     loadWorkspaceNote();
@@ -2023,4 +2130,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initOutlineMap();
     initCssCustomizer();
     initFocusRpg();
+    initAmbientVisualizer();
 });
